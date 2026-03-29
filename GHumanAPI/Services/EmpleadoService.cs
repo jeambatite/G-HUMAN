@@ -1,0 +1,230 @@
+using Microsoft.EntityFrameworkCore;
+using GHumanAPI.Data;
+using GHumanAPI.DTOs;
+using GHumanAPI.Models;
+
+namespace GHumanAPI.Services
+{
+    public class EmpleadoService : IEmpleadoService
+    {
+        private readonly AppDbContext _context;
+
+        public EmpleadoService(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<List<EmpleadoDTO>> GetAll()
+        {
+            return await _context.Empleados
+                .Include(e => e.Rol)
+                .Include(e => e.Jefe)
+                .Include(e => e.DatosSensibles)
+                .Select(e => new EmpleadoDTO
+                {
+                    Id = e.Id,
+                    Genero = e.Genero,
+                    Nombre = e.Nombre,
+                    Email = e.Email,
+                    Sueldo = e.Sueldo,
+                    FechaI = e.FechaI.ToString("yyyy-MM-dd"),
+                    Departamento = e.Departamento,
+                    IdJefe = e.IdJefe,
+                    NombreJefe = e.Jefe != null ? e.Jefe.Nombre : string.Empty,
+                    IdRol = e.IdRol,
+                    NombreRol = e.Rol.Nombre,
+                    Estado = e.Estado,
+                    TieneUsuario = _context.Usuarios.Any(u => u.IdEmpleado == e.Id),
+                    FechaNacimiento = e.DatosSensibles != null ? e.DatosSensibles.FechaNacimiento.ToString("yyyy-MM-dd") : null
+                })
+                .ToListAsync();
+        }
+
+        public async Task<EmpleadoDTO?> GetById(int id)
+        {
+            var e = await _context.Empleados
+                .Include(e => e.Rol)
+                .Include(e => e.Jefe)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (e == null) return null;
+
+            return new EmpleadoDTO
+            {
+                Id = e.Id,
+                Genero = e.Genero,
+                Nombre = e.Nombre,
+                Email = e.Email,
+                Sueldo = e.Sueldo,
+                FechaI = e.FechaI.ToString("yyyy-MM-dd"),
+                Departamento = e.Departamento,
+                IdJefe = e.IdJefe,
+                NombreJefe = e.Jefe != null ? e.Jefe.Nombre : string.Empty,
+                IdRol = e.IdRol,
+                NombreRol = e.Rol.Nombre,
+                Estado = e.Estado
+            };
+        }
+
+        public async Task<EmpleadoDTO> Crear(CrearEmpleadoDTO dto)
+        {
+            // Verificar email duplicado
+            if (await _context.Empleados.AnyAsync(e => e.Email == dto.Email))
+                throw new InvalidOperationException("EMAIL_DUPLICADO");
+
+            // Verificar documento duplicado
+            if (await _context.DatosSensibles.AnyAsync(d => d.NumDocumento == dto.NumDocumento))
+                throw new InvalidOperationException("DOCUMENTO_DUPLICADO");
+            var empleado = new Empleado
+            {
+                Genero = dto.Genero,
+                Nombre = dto.Nombre,
+                Email = dto.Email,
+                Sueldo = dto.Sueldo,
+                FechaI = dto.FechaI,
+                Departamento = dto.Departamento,
+                IdJefe = dto.IdJefe,
+                IdRol = dto.IdRol,
+                Estado = dto.Estado
+            };
+
+            _context.Empleados.Add(empleado);
+            await _context.SaveChangesAsync();
+
+            // Crear datos sensibles
+            var datosSensibles = new DatosSensible
+            {
+                IdEmpleado = empleado.Id,
+                TipoDocumento = dto.TipoDocumento,
+                NumDocumento = dto.NumDocumento,
+                TipoSangre = dto.TipoSangre,
+                FechaNacimiento = dto.FechaNacimiento,
+                Telefono = dto.Telefono,
+                ContactoEmergencia = dto.ContactoEmergencia,
+                TelEmergencia = dto.TelEmergencia
+            };
+
+            _context.DatosSensibles.Add(datosSensibles);
+            await _context.SaveChangesAsync();
+
+            return (await GetById(empleado.Id))!;
+        }
+
+        public async Task<EmpleadoDTO?> Editar(int id, EditarEmpleadoDTO dto)
+        {
+            var empleado = await _context.Empleados.FindAsync(id);
+            if (empleado == null) return null;
+
+            empleado.Genero = dto.Genero;
+            empleado.Nombre = dto.Nombre;
+            empleado.Email = dto.Email;
+            empleado.Departamento = dto.Departamento;
+            empleado.IdJefe = dto.IdJefe;
+            empleado.Estado = dto.Estado;
+
+            if (dto.Sueldo.HasValue) empleado.Sueldo = dto.Sueldo.Value;
+            if (dto.IdRol.HasValue) empleado.IdRol = dto.IdRol.Value;
+            if (dto.FechaI.HasValue) empleado.FechaI = dto.FechaI.Value;
+
+            await _context.SaveChangesAsync();
+            return await GetById(id);
+        }
+
+
+        public async Task<bool> Eliminar(int id)
+        {
+            var empleado = await _context.Empleados.FindAsync(id);
+            if (empleado == null) return false;
+
+            // Desasignar jefe de subordinados
+            var subordinados = await _context.Empleados
+                .Where(e => e.IdJefe == id)
+                .ToListAsync();
+
+            foreach (var sub in subordinados)
+                sub.IdJefe = null;
+
+            // Eliminar usuario manualmente (sin cascade)
+            var usuario = await _context.Usuarios
+                .FirstOrDefaultAsync(u => u.IdEmpleado == id);
+            if (usuario != null) _context.Usuarios.Remove(usuario);
+
+            _context.Empleados.Remove(empleado);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
+        public async Task<DatosSensiblesDTO?> GetDatosSensibles(int id)
+        {
+            var ds = await _context.DatosSensibles
+                .FirstOrDefaultAsync(d => d.IdEmpleado == id);
+
+            if (ds == null) return null;
+
+            return new DatosSensiblesDTO
+            {
+                TipoDocumento = ds.TipoDocumento,
+                NumDocumento = ds.NumDocumento,
+                TipoSangre = ds.TipoSangre,
+                FechaNacimiento = ds.FechaNacimiento,
+                Telefono = ds.Telefono,
+                ContactoEmergencia = ds.ContactoEmergencia,
+                TelEmergencia = ds.TelEmergencia
+            };
+        }
+        public async Task<ResultadoPaginadoDTO<EmpleadoDTO>> GetAllPaginado(int pagina, int tamanoPagina, string? nombre = null, string? rol = null, string? estado = null, string? departamento = null)
+        {
+            var query = _context.Empleados
+                .Include(e => e.Rol)
+                .Include(e => e.Jefe)
+                .Include(e => e.DatosSensibles)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(nombre))
+                query = query.Where(e => e.Nombre.Contains(nombre));
+
+            if (!string.IsNullOrEmpty(rol))
+                query = query.Where(e => e.Rol.Nombre == rol);
+
+            if (!string.IsNullOrEmpty(estado))
+                query = query.Where(e => e.Estado == estado);
+
+            if (!string.IsNullOrEmpty(departamento))
+                query = query.Where(e => e.Departamento == departamento);
+
+            var total = await query.CountAsync();
+
+            var data = await query
+                .Skip((pagina - 1) * tamanoPagina)
+                .Take(tamanoPagina)
+                .Select(e => new EmpleadoDTO
+                {
+                    Id = e.Id,
+                    Genero = e.Genero,
+                    Nombre = e.Nombre,
+                    Email = e.Email,
+                    Sueldo = e.Sueldo,
+                    FechaI = e.FechaI.ToString("yyyy-MM-dd"),
+                    Departamento = e.Departamento,
+                    IdJefe = e.IdJefe,
+                    NombreJefe = e.Jefe != null ? e.Jefe.Nombre : string.Empty,
+                    IdRol = e.IdRol,
+                    NombreRol = e.Rol.Nombre,
+                    Estado = e.Estado,
+                    TieneUsuario = _context.Usuarios.Any(u => u.IdEmpleado == e.Id),
+                    FechaNacimiento = e.DatosSensibles != null ? e.DatosSensibles.FechaNacimiento.ToString("yyyy-MM-dd") : null
+                })
+                .ToListAsync();
+
+            return new ResultadoPaginadoDTO<EmpleadoDTO>
+            {
+                Data = data,
+                Total = total,
+                Pagina = pagina,
+                TamanoPagina = tamanoPagina,
+                TotalPaginas = (int)Math.Ceiling((double)total / tamanoPagina)
+            };
+        }
+    }
+}

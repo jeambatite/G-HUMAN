@@ -1,20 +1,24 @@
+# 1. Etapa de compilación
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Copiar archivos y restaurar
-COPY . .
+# Copiar el archivo de proyecto y restaurar dependencias
+# (Asegúrate de que el nombre sea GHumanAPI.csproj)
+COPY *.csproj ./
 RUN dotnet restore
 
-# Publicar el proyecto
-RUN dotnet publish -c Release -o out
+# Copiar el resto del código y compilar el PROYECTO, no la solución
+COPY . ./
+RUN dotnet publish GHumanAPI.csproj -c Release -o out
 
-# Imagen de ejecución
+# 2. Etapa de ejecución
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app/out .
 
-# Render asigna un puerto dinámico, .NET debe escucharlo
-ENV ASPNETCORE_URLS=http://+:10000
-EXPOSE 10000
+# Configurar el puerto para Railway
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "G-HUMAN.API.dll"]
+# El nombre del DLL debe ser el que genera tu proyecto
+ENTRYPOINT ["dotnet", "GHumanAPI.dll"]

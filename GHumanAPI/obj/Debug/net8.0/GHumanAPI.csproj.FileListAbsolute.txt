@@ -276,3 +276,4 @@ C:\Users\eloza\OneDrive\Escritorio\g-human\GHumanAPI\obj\Debug\net8.0\refint\GHu
 C:\Users\eloza\OneDrive\Escritorio\g-human\GHumanAPI\obj\Debug\net8.0\GHumanAPI.pdb
 C:\Users\eloza\OneDrive\Escritorio\g-human\GHumanAPI\obj\Debug\net8.0\GHumanAPI.genruntimeconfig.cache
 C:\Users\eloza\OneDrive\Escritorio\g-human\GHumanAPI\obj\Debug\net8.0\ref\GHumanAPI.dll
+C:\Users\eloza\OneDrive\Escritorio\g-human\GHumanAPI\obj\Debug\net8.0\GHumanAPI.sourcelink.json

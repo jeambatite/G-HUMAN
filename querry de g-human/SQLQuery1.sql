@@ -129,6 +129,7 @@ VALUES (1, 'Cedula', '001-0000001-1', 'O+', '1985-06-15', '809-555-0001', 'Maria
 INSERT INTO Usuarios (id_empleado, username, password_hash, pin_hash, activo)
 VALUES (1, 'admin', '$2a$11$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.', NULL, 1);
 
+/*
 SELECT TABLE_NAME, COLUMN_NAME 
 FROM INFORMATION_SCHEMA.COLUMNS
 ORDER BY TABLE_NAME;
@@ -160,3 +161,4 @@ JOIN DatosSensibles ds ON ds.id_empleado = e.id;
 
 update DatosSensibles set fecha_nacimiento='2026-03-18' where id_empleado=33;
 update DatosSensibles set fecha_nacimiento='2026-03-19' where id_empleado=37;
+*/

@@ -50,13 +50,14 @@ builder.Services.AddAuthorization();
 // CORS para Angular
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AngularPolicy", policy =>
+    options.AddPolicy("AllowRailwayFront", builder =>
     {
-        policy.WithOrigins("http://localhost:4200")//probablemente tendre que remplazarlo
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        builder.WithOrigins("https://tu-app-angular.up.railway.app") // <--- PON AQUÍ LA URL DE TU FRONT EN RAILWAY
+               .AllowAnyMethod()
+               .AllowAnyHeader();
     });
 });
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmpleadoService, EmpleadoService>();
 builder.Services.AddScoped<IRolService, RolService>();
@@ -76,8 +77,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseCors("AngularPolicy");
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseCors("AllowRailwayFront");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

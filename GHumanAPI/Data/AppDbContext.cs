@@ -20,7 +20,7 @@ namespace GHumanAPI.Data
             modelBuilder.Entity<Empleado>().ToTable("empleados");
             modelBuilder.Entity<Rol>().ToTable("roles");
             modelBuilder.Entity<Permiso>().ToTable("permisos");
-            modelBuilder.Entity<RolPermiso>().ToTable("roles_permisos"); // Recomendado usar snake_case
+            modelBuilder.Entity<RolPermiso>().ToTable("rolespermisos"); // Recomendado usar snake_case
             modelBuilder.Entity<DatosSensible>().ToTable("datos_sensibles");
             modelBuilder.Entity<Usuario>().ToTable("usuarios");
 

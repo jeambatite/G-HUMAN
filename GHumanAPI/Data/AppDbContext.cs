@@ -16,12 +16,13 @@ namespace GHumanAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Empleado>().ToTable("Empleados");
-            modelBuilder.Entity<Rol>().ToTable("Roles");
-            modelBuilder.Entity<Permiso>().ToTable("Permisos");
-            modelBuilder.Entity<RolPermiso>().ToTable("RolesPermisos");
-            modelBuilder.Entity<DatosSensible>().ToTable("DatosSensibles");
-            modelBuilder.Entity<Usuario>().ToTable("Usuarios");
+            // 1. MAPEAMOS LAS TABLAS A MINÚSCULAS (Para evitar el error 42P01 en Postgres)
+            modelBuilder.Entity<Empleado>().ToTable("empleados");
+            modelBuilder.Entity<Rol>().ToTable("roles");
+            modelBuilder.Entity<Permiso>().ToTable("permisos");
+            modelBuilder.Entity<RolPermiso>().ToTable("roles_permisos"); // Recomendado usar snake_case
+            modelBuilder.Entity<DatosSensible>().ToTable("datos_sensibles");
+            modelBuilder.Entity<Usuario>().ToTable("usuarios");
 
             // Mapeo de columnas Empleados
             modelBuilder.Entity<Empleado>(e =>
@@ -43,6 +44,7 @@ namespace GHumanAPI.Data
                 u.Property(x => x.IdEmpleado).HasColumnName("id_empleado");
                 u.Property(x => x.PasswordHash).HasColumnName("password_hash");
                 u.Property(x => x.PinHash).HasColumnName("pin_hash");
+                u.Property(x => x.Username).HasColumnName("username"); // No olvides esta si existe en tu modelo
             });
 
             // Mapeo de columnas DatosSensibles
@@ -63,49 +65,56 @@ namespace GHumanAPI.Data
                 rp.Property(x => x.IdRol).HasColumnName("id_rol");
                 rp.Property(x => x.IdPermiso).HasColumnName("id_permiso");
             });
+
+            // --- CONFIGURACIÓN DE RELACIONES ---
+
             // Clave compuesta RolPermiso
             modelBuilder.Entity<RolPermiso>()
                 .HasKey(rp => new { rp.IdRol, rp.IdPermiso });
 
-            // Relacion Rol -> RolPermiso
             modelBuilder.Entity<RolPermiso>()
                 .HasOne(rp => rp.Rol)
                 .WithMany(r => r.RolesPermisos)
                 .HasForeignKey(rp => rp.IdRol);
 
-            // Relacion Permiso -> RolPermiso
             modelBuilder.Entity<RolPermiso>()
                 .HasOne(rp => rp.Permiso)
                 .WithMany(p => p.RolesPermisos)
                 .HasForeignKey(rp => rp.IdPermiso);
 
-            // Relacion Empleado -> Jefe (self-referencing)
             modelBuilder.Entity<Empleado>()
                 .HasOne(e => e.Jefe)
                 .WithMany(e => e.Subordinados)
                 .HasForeignKey(e => e.IdJefe)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Relacion Empleado -> Rol
             modelBuilder.Entity<Empleado>()
                 .HasOne(e => e.Rol)
                 .WithMany(r => r.Empleados)
                 .HasForeignKey(e => e.IdRol)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relacion Empleado -> DatosSensibles
             modelBuilder.Entity<DatosSensible>()
                 .HasOne(ds => ds.Empleado)
                 .WithOne(e => e.DatosSensibles)
                 .HasForeignKey<DatosSensible>(ds => ds.IdEmpleado)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Relacion Empleado -> Usuario
             modelBuilder.Entity<Usuario>()
                 .HasOne(u => u.Empleado)
                 .WithOne(e => e.Usuario)
                 .HasForeignKey<Usuario>(u => u.IdEmpleado)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            // 2. REFUERZO AUTOMÁTICO PARA MINÚSCULAS (Cualquier propiedad/columna no mapeada arriba)
+            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            {
+                foreach (var property in entity.GetProperties())
+                {
+                    // Si no le hemos puesto un nombre manual, lo pasamos a minúsculas
+                    property.SetColumnName(property.GetColumnName().ToLower());
+                }
+            }
         }
     }
 }

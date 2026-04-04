@@ -8,7 +8,6 @@ using GHumanAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // --- 1. CONFIGURACIÓN DE BASE DE DATOS ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -23,7 +22,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }
 });
 
-// Configuración de Puerto para Railway
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
 
@@ -46,14 +44,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// --- 3. CONFIGURACIÓN DE CORS (CORREGIDO) ---
+// --- 3. CONFIGURACIÓN DE CORS ---
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowRailwayFront", policy =>
     {
         policy.WithOrigins(
-                "https://beautiful-adaptation-production-7e38.up.railway.app", // SIN barra diagonal al final
-                "http://localhost:4200" // El puerto estándar de Angular local
+                "https://beautiful-adaptation-production-7e38.up.railway.app",
+                "http://localhost:4200"
               )
               .AllowAnyMethod()
               .AllowAnyHeader()
@@ -79,22 +77,35 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// --- 5. MIDDLEWARE PIPELINE (EL ORDEN ES CRÍTICO) ---
+// --- 5. AUTO-MIGRACIÓN (PARA CREAR TABLAS EN MINÚSCULAS) ---
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        context.Database.Migrate();
+        Console.WriteLine("✅ Base de datos sincronizada en minúsculas.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Error al sincronizar: {ex.Message}");
+    }
+}
+
+// --- 6. MIDDLEWARE PIPELINE ---
 app.UseDeveloperExceptionPage();
-// Swagger siempre visible en Railway para pruebas (opcional)
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseRouting();
 
-app.UseRouting(); // 1. Primero Routing
-
-// 2. CORS DEBE IR AQUÍ: Después de Routing y antes de Auth
 app.UseCors("AllowRailwayFront"); 
 
-app.UseAuthentication(); // 3. Autenticación
-app.UseAuthorization();  // 4. Autorización
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

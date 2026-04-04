@@ -50,11 +50,15 @@ builder.Services.AddAuthorization();
 // CORS para Angular
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowRailwayFront", builder =>
+    options.AddPolicy("AllowRailwayFront", policy => // cambiamos 'builder' por 'policy' para no confundir con el WebApplicationBuilder
     {
-        builder.WithOrigins("beautiful-adaptation-production-7e38.up.railway.app")
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+        policy.WithOrigins(
+                "https://beautiful-adaptation-production-7e38.up.railway.app", // <--- AGREGAR HTTPS://
+                "http://localhost:5256/api"                                       // <--- AGREGAR LOCALHOST
+              )
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials(); // Agregado por si usas JWT en Cookies o Headers específicos
     });
 });
 

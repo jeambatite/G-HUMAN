@@ -8,6 +8,7 @@ using GHumanAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // --- 1. CONFIGURACIÓN DE BASE DE DATOS ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -79,7 +80,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // --- 5. MIDDLEWARE PIPELINE (EL ORDEN ES CRÍTICO) ---
-
+app.UseDeveloperExceptionPage();
 // Swagger siempre visible en Railway para pruebas (opcional)
 app.UseSwagger();
 app.UseSwaggerUI();

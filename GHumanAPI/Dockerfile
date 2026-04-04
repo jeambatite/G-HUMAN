@@ -1,24 +1,31 @@
-# 1. Etapa de compilación
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Etapa 1: Construcción
+FROM node:18-alpine AS build
 WORKDIR /app
 
-# Copiar el archivo de proyecto y restaurar dependencias
-# (Asegúrate de que el nombre sea GHumanAPI.csproj)
-COPY *.csproj ./
-RUN dotnet restore
+# Copiar archivos de dependencias
+COPY package*.json ./
+RUN npm install
 
-# Copiar el resto del código y compilar el PROYECTO, no la solución
-COPY . ./
-RUN dotnet publish GHumanAPI.csproj -c Release -o out
+# Copiar todo el código y construir
+COPY . .
+RUN npm run build -- --configuration=production
 
-# 2. Etapa de ejecución
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
-WORKDIR /app
-COPY --from=build /app/out .
+# Etapa 2: Servidor Web (Nginx)
+FROM nginx:alpine
 
-# Configurar el puerto para Railway
-ENV ASPNETCORE_URLS=http://+:8080
-EXPOSE 8080
+# AQUÍ ESTÁ EL TRUCO: 
+# Usamos un comodín (*) para encontrar la carpeta 'browser' sin importar el nombre del proyecto
+COPY --from=build /app/dist/*/browser /usr/share/nginx/html
 
-# El nombre del DLL debe ser el que genera tu proyecto
-ENTRYPOINT ["dotnet", "GHumanAPI.dll"]
+# Copiamos una configuración básica de Nginx para Angular (Rutas)
+RUN printf 'server { \n\
+    listen 80; \n\
+    location / { \n\
+        root /usr/share/nginx/html; \n\
+        index index.html; \n\
+        try_files $uri $uri/ /index.html; \n\
+    } \n\
+}' > /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

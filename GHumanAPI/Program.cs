@@ -53,7 +53,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowRailwayFront", policy => // cambiamos 'builder' por 'policy' para no confundir con el WebApplicationBuilder
     {
         policy.WithOrigins(
-                "https://beautiful-adaptation-production-7e38.up.railway.app", // <--- AGREGAR HTTPS://
+                "https://beautiful-adaptation-production-7e38.up.railway.app/", // <--- AGREGAR HTTPS://
                 "http://localhost:5256/api"                                       // <--- AGREGAR LOCALHOST
               )
               .AllowAnyMethod()
@@ -81,10 +81,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("AllowRailwayFront");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseCors("AllowRailwayFront");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

@@ -1,5 +1,5 @@
-# Etapa 1: Construcción (Build)
-FROM node:18-alpine AS build
+# Etapa 1: Construcción (Build) - CAMBIAMOS A NODE 22
+FROM node:22-alpine AS build
 WORKDIR /app
 
 # Instalar dependencias
@@ -10,13 +10,13 @@ RUN npm install
 COPY . .
 RUN npm run build -- --configuration=production
 
-# Etapa 2: Servidor (Nginx) para entregar los archivos
+# Etapa 2: Servidor (Nginx)
 FROM nginx:alpine
 
-# IMPORTANTE: Esta línea busca la carpeta 'browser' dentro de cualquier subcarpeta de 'dist'
+# Copiamos los archivos generados
 COPY --from=build /app/dist/*/browser /usr/share/nginx/html
 
-# Configuración para que las rutas de Angular funcionen al refrescar (F5)
+# Configuración para rutas de Angular (F5 fix)
 RUN printf 'server { \n\
     listen 80; \n\
     location / { \n\

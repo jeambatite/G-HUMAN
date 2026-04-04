@@ -8,26 +8,26 @@ using GHumanAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Base de datos
+// --- 1. CONFIGURACIÓN DE BASE DE DATOS ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    // Si la cadena contiene "postgres", usamos PostgreSQL (Railway)
     if (connectionString != null && connectionString.Contains("Host="))
     {
         options.UseNpgsql(connectionString);
     }
     else 
     {
-        // De lo contrario, seguimos usando SQL Server (Tu PC Local)
         options.UseSqlServer(connectionString);
     }
 });
+
+// Configuración de Puerto para Railway
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
-// JWT
-var jwtKey = builder.Configuration["Jwt:Key"]!;
 
+// --- 2. CONFIGURACIÓN DE JWT ---
+var jwtKey = builder.Configuration["Jwt:Key"]!;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -37,57 +37,64 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            // Estos valores se leerán de las variables de entorno en Railway
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     });
 
 builder.Services.AddAuthorization();
 
-// CORS para Angular
+// --- 3. CONFIGURACIÓN DE CORS (CORREGIDO) ---
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowRailwayFront", policy => // cambiamos 'builder' por 'policy' para no confundir con el WebApplicationBuilder
+    options.AddPolicy("AllowRailwayFront", policy =>
     {
         policy.WithOrigins(
-                "https://beautiful-adaptation-production-7e38.up.railway.app/", // <--- AGREGAR HTTPS://
-                "http://localhost:5256/api"                                       // <--- AGREGAR LOCALHOST
+                "https://beautiful-adaptation-production-7e38.up.railway.app", // SIN barra diagonal al final
+                "http://localhost:4200" // El puerto estándar de Angular local
               )
               .AllowAnyMethod()
               .AllowAnyHeader()
-              .AllowCredentials(); // Agregado por si usas JWT en Cookies o Headers específicos
+              .AllowCredentials(); 
     });
 });
 
+// --- 4. INYECCIÓN DE DEPENDENCIAS ---
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmpleadoService, EmpleadoService>();
 builder.Services.AddScoped<IRolService, RolService>();
 builder.Services.AddScoped<IPermisoService, PermisoService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-app.UseCors("AllowRailwayFront");
+// --- 5. MIDDLEWARE PIPELINE (EL ORDEN ES CRÍTICO) ---
+
+// Swagger siempre visible en Railway para pruebas (opcional)
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRouting();
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseRouting(); // 1. Primero Routing
+
+// 2. CORS DEBE IR AQUÍ: Después de Routing y antes de Auth
+app.UseCors("AllowRailwayFront"); 
+
+app.UseAuthentication(); // 3. Autenticación
+app.UseAuthorization();  // 4. Autorización
+
 app.MapControllers();
 
 app.Run();

@@ -52,7 +52,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowRailwayFront", builder =>
     {
-        builder.WithOrigins("https://tu-app-angular.up.railway.app") // <--- PON AQUÍ LA URL DE TU FRONT EN RAILWAY
+        builder.WithOrigins("beautiful-adaptation-production-7e38.up.railway.app")
                .AllowAnyMethod()
                .AllowAnyHeader();
     });

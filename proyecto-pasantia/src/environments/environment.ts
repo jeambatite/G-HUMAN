@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://g-human-production.up.railway.app' // Tu URL de Railway
+  apiUrl: 'https://g-human-production.up.railway.app/api' // Tu URL de Railway
 };

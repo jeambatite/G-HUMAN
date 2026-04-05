@@ -21,6 +21,8 @@ namespace GHumanAPI.Services
 
         public async Task<LoginResponseDTO?> Login(LoginDTO dto)
         {
+            Console.WriteLine($"Buscando usuario: {dto.Username}");
+
             var usuario = await _context.Usuarios
                 .Include(u => u.Empleado)
                     .ThenInclude(e => e.Rol)
@@ -28,8 +30,14 @@ namespace GHumanAPI.Services
                             .ThenInclude(rp => rp.Permiso)
                 .FirstOrDefaultAsync(u => u.Username == dto.Username && u.Activo);
 
+            Console.WriteLine($"Usuario encontrado: {usuario != null}");
+
             if (usuario == null) return null;
-            if (!BCrypt.Net.BCrypt.Verify(dto.Password, usuario.PasswordHash)) return null;
+
+            var verificado = BCrypt.Net.BCrypt.Verify(dto.Password, usuario.PasswordHash);
+            Console.WriteLine($"Password verificado: {verificado}");
+
+            if (!verificado) return null;
 
             var permisos = usuario.Empleado.Rol.RolesPermisos
                 .Select(rp => rp.Permiso.Nombre)
@@ -52,7 +60,6 @@ namespace GHumanAPI.Services
                 Permisos = permisos
             };
         }
-
         public async Task<bool> VerificarPin(int idEmpleado, string pin)
         {
             var usuario = await _context.Usuarios

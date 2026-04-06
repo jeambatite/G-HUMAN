@@ -73,7 +73,7 @@ namespace GHumanAPI.Services
                 throw new InvalidOperationException("EMAIL_DUPLICADO");
 
             // Verificar documento duplicado
-            if (await _context.DatosSensibles.AnyAsync(d => d.NumDocumento == dto.NumDocumento))
+            if (await _context.Datos_sensibles.AnyAsync(d => d.NumDocumento == dto.NumDocumento))
                 throw new InvalidOperationException("DOCUMENTO_DUPLICADO");
             var empleado = new Empleado
             {
@@ -104,7 +104,7 @@ namespace GHumanAPI.Services
                 TelEmergencia = dto.TelEmergencia
             };
 
-            _context.DatosSensibles.Add(datosSensibles);
+            _context.Datos_sensibles.Add(datosSensibles);
             await _context.SaveChangesAsync();
 
             return (await GetById(empleado.Id))!;
@@ -157,7 +157,7 @@ namespace GHumanAPI.Services
 
         public async Task<DatosSensiblesDTO?> GetDatosSensibles(int id)
         {
-            var ds = await _context.DatosSensibles
+            var ds = await _context.Datos_sensibles
                 .FirstOrDefaultAsync(d => d.IdEmpleado == id);
 
             if (ds == null) return null;

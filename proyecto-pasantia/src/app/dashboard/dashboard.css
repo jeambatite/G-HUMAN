@@ -34,7 +34,7 @@
 
 /* ── ROOT WRAPPER ── */
 .dashboard-root {
-  font-family: 'DM Sans', sans-serif;
+  font-family: Trebuchet MS, sans-serif;
   background: var(--gray-50);
   color: var(--text-on-white);
   min-height: 100vh;

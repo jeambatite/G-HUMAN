@@ -217,6 +217,7 @@
   border-left: 3px solid transparent;
   transition: all 0.15s;
   user-select: none;
+  font-family: 'Trebuchet MS', sans-serif;
 }
 
 .nav-item:hover { background: rgba(255,255,255,0.08); color: #ffffff; }

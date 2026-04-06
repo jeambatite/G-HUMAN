@@ -11,7 +11,7 @@ namespace GHumanAPI.Data
         public DbSet<Permiso> Permisos { get; set; }
         public DbSet<RolPermiso> RolesPermisos { get; set; }
         public DbSet<Empleado> Empleados { get; set; }
-        public DbSet<DatosSensible> Datos_sensibles { get; set; }
+        public DbSet<DatosSensible> Datossensibles { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

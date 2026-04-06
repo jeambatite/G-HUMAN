@@ -34,7 +34,7 @@
 
 /* ── ROOT WRAPPER ── */
 .dashboard-root {
-  font-family: Trebuchet MS, sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   background: var(--gray-50);
   color: var(--text-on-white);
   min-height: 100vh;
@@ -163,7 +163,7 @@
   border: 1px solid var(--red-bd);
   color: var(--red);
   padding: 7px 16px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -431,7 +431,7 @@
   background: var(--white);
   border: 1px solid var(--gray-200);
   color: var(--text-muted);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 11px;
   font-weight: 500;
   text-transform: uppercase;
@@ -565,7 +565,7 @@ td {
   background: var(--white);
   border: 1px solid var(--gray-200);
   color: var(--gray-900);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 13px;
   font-weight: 400;
   padding: 9px 12px;
@@ -607,7 +607,7 @@ td {
   background: var(--blue);
   border: 1px solid rgba(255,255,255,0.2);
   color: #ffffff;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 11px;
   font-weight: 500;
   padding: 5px 8px;
@@ -670,7 +670,7 @@ td {
 }
 
 .modal-title {
-  font-family: "Bebas Neue", sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 22px;
   letter-spacing: 2px;
   color: #ffffff;
@@ -709,7 +709,7 @@ td {
   background: var(--white);
   border: 1px solid var(--gray-200);
   color: var(--text-muted);
-  font-family: "DM Sans", sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -726,7 +726,7 @@ td {
   background: var(--green);
   color: #ffffff;
   border: none;
-  font-family: "Bebas Neue", sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 15px;
   letter-spacing: 3px;
   padding: 9px 24px;
@@ -841,7 +841,7 @@ td {
   background: var(--white);
   border: 1px solid rgba(255,255,255,0.4);
   color: #ffffff;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -966,7 +966,7 @@ td {
   right: 30px;
   padding: 14px 20px;
   font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   font-weight: 600;
   z-index: 9999;
   border-radius: 6px;

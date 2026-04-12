@@ -172,6 +172,9 @@
                 (keypress)="soloEnteros($event)">
             </div>
             <button class="btn-add" (click)="aplicarBonoGlobal()">Aplicar a Todos</button>
+            <button class="btn-add" style="background: var(--green);" (click)="guardarTodosLosBonos()">
+              Guardar Todos los Bonos
+            </button>
           </div>
         </div>
       </div>
@@ -342,7 +345,9 @@
       </div>
       <div class="modal-foot">
         <button class="btn-cancel" (click)="cerrarModalTestRun()">Cancelar</button>
-        <button class="btn-save" (click)="ejecutarTestRun()">Ejecutar</button>
+        <button class="btn-save" (click)="ejecutarTestRun()" [disabled]="procesando">
+          {{ procesando ? 'Procesando...' : 'Ejecutar' }}
+        </button>
       </div>
     </div>
   </div>

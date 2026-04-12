@@ -26,6 +26,7 @@ export class Nomina implements OnInit {
   modalTestRunAbierto: boolean = false;
   secretKey: string = '';
   errorTestRun: string = '';
+  procesando: boolean = false;
 
   //variables paginado
   paginaActual: number = 1;
@@ -227,6 +228,18 @@ export class Nomina implements OnInit {
     const bono = emp.sueldo * (emp.bonoProximoPago / 100);
     return emp.sueldo + bono;
   }
+  guardarTodosLosBonos(): void {
+    const promesas = this.empleados
+      .filter(e => e.bonoProximoPago > 0)
+      .map(e => this.nominaService.actualizarBono(e.id, e.bonoProximoPago).toPromise());
+
+    Promise.all(promesas).then(() => {
+      this.mostrarNotificacion('Bonos guardados correctamente.');
+    }).catch(() => {
+      this.mostrarNotificacion('Error guardando algunos bonos.', 'error');
+    });
+  }
+
 
   // Modal test-run
   abrirModalTestRun(): void {
@@ -245,14 +258,25 @@ export class Nomina implements OnInit {
       this.errorTestRun = 'La clave es obligatoria.';
       return;
     }
+    this.errorTestRun = '';
+    this.procesando = true;
+    this.cdr.detectChanges();
     this.nominaService.testRun(this.secretKey).subscribe({
       next: () => {
+        this.procesando = false;
         this.cerrarModalTestRun();
         this.mostrarNotificacion('Nómina procesada correctamente.');
         this.cargarDatos();
+        this.cdr.detectChanges();
       },
-      error: () => {
-        this.errorTestRun = 'Clave incorrecta.';
+      error: (err) => {
+        this.procesando = false;
+        if (err.status === 401) {
+          this.errorTestRun = 'Clave incorrecta.';
+        } else {
+          this.errorTestRun = 'Error al procesar la nómina.';
+        }
+        this.cdr.detectChanges();
       }
     });
   }

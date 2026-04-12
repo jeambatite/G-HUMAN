@@ -16,6 +16,10 @@ namespace GHumanAPI.DTOs
         public string Estado { get; set; } = string.Empty;
         public bool TieneUsuario { get; set; }
         public string? FechaNacimiento { get; set; }//para los cumple años
+        //para la nomina
+        public string Banco { get; set; } = string.Empty;
+        public string NumeroCuenta { get; set; } = string.Empty;
+        public string TipoCuenta { get; set; } = string.Empty;
     }
 
     public class CrearEmpleadoDTO
@@ -37,6 +41,10 @@ namespace GHumanAPI.DTOs
         public string Telefono { get; set; } = string.Empty;
         public string ContactoEmergencia { get; set; } = string.Empty;
         public string TelEmergencia { get; set; } = string.Empty;
+        //para la nomina 
+        public string Banco { get; set; } = string.Empty;
+        public string NumeroCuenta { get; set; } = string.Empty;
+        public string TipoCuenta { get; set; } = string.Empty;
     }
 
     public class EditarEmpleadoDTO
@@ -50,5 +58,8 @@ namespace GHumanAPI.DTOs
         public int? IdRol { get; set; }
         public string Estado { get; set; } = string.Empty;
         public DateOnly? FechaI { get; set; }
+        public string? Banco { get; set; }
+        public string? NumeroCuenta { get; set; }
+        public string? TipoCuenta { get; set; }
     }
 }

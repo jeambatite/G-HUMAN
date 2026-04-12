@@ -13,6 +13,8 @@ namespace GHumanAPI.Data
         public DbSet<Empleado> Empleados { get; set; }
         public DbSet<DatosSensible> Datos_sensibles { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<EmpresaConfig> EmpresaConfig { get; set; }
+        public DbSet<NominaPago> NominaPagos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -115,6 +117,37 @@ namespace GHumanAPI.Data
                     property.SetColumnName(property.GetColumnName().ToLower());
                 }
             }
+            modelBuilder.Entity<EmpresaConfig>().ToTable("empresa_config");
+            modelBuilder.Entity<NominaPago>().ToTable("nomina_pagos");
+
+            modelBuilder.Entity<EmpresaConfig>(ec =>
+            {
+                ec.Property(x => x.BalanceActual).HasColumnName("balance_actual").HasColumnType("decimal(18,2)");
+                ec.Property(x => x.UltimaNominaMes).HasColumnName("ultima_nomina_mes");
+                ec.Property(x => x.DiaPago).HasColumnName("dia_pago");
+                ec.Property(x => x.EmailAdmin).HasColumnName("email_admin");
+                ec.Property(x => x.SmtpPasswordHash).HasColumnName("smtp_password_hash");
+                ec.Property(x => x.TestRunKeyHash).HasColumnName("test_run_key_hash");
+            });
+
+            modelBuilder.Entity<NominaPago>(np =>
+            {
+                np.Property(x => x.EmpleadoId).HasColumnName("empleado_id");
+                np.Property(x => x.FechaPago).HasColumnName("fecha_pago");
+                np.Property(x => x.MontoBase).HasColumnName("monto_base").HasColumnType("decimal(18,2)");
+                np.Property(x => x.MontoBono).HasColumnName("monto_bono").HasColumnType("decimal(18,2)");
+                np.Property(x => x.MontoTotal).HasColumnName("monto_total").HasColumnType("decimal(18,2)");
+                np.HasOne(x => x.Empleado).WithMany().HasForeignKey(x => x.EmpleadoId);
+            });
+
+            modelBuilder.Entity<Empleado>(e =>
+            {
+                // ... mapeos existentes ...
+                e.Property(x => x.BonoProximoPago).HasColumnName("bono_proximo_pago");
+                e.Property(x => x.Banco).HasColumnName("banco");
+                e.Property(x => x.NumeroCuenta).HasColumnName("numero_cuenta");
+                e.Property(x => x.TipoCuenta).HasColumnName("tipo_cuenta");
+            });
         }
     }
 }

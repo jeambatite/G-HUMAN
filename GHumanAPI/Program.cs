@@ -59,6 +59,8 @@ builder.Services.AddScoped<IEmpleadoService, EmpleadoService>();
 builder.Services.AddScoped<IRolService, RolService>();
 builder.Services.AddScoped<IPermisoService, PermisoService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<INominaService, NominaService>();
+builder.Services.AddHostedService<GHumanAPI.BackgroundServices.NominaBackgroundService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

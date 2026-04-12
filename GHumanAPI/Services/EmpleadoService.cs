@@ -35,7 +35,11 @@ namespace GHumanAPI.Services
                     NombreRol = e.Rol.Nombre,
                     Estado = e.Estado,
                     TieneUsuario = _context.Usuarios.Any(u => u.IdEmpleado == e.Id),
-                    FechaNacimiento = e.DatosSensibles != null ? e.DatosSensibles.FechaNacimiento.ToString("yyyy-MM-dd") : null
+                    FechaNacimiento = e.DatosSensibles != null ? e.DatosSensibles.FechaNacimiento.ToString("yyyy-MM-dd") : null,
+                    //nomina 
+                    Banco = e.Banco,
+                    NumeroCuenta = e.NumeroCuenta,
+                    TipoCuenta = e.TipoCuenta,
                 })
                 .ToListAsync();
         }
@@ -85,7 +89,10 @@ namespace GHumanAPI.Services
                 Departamento = dto.Departamento,
                 IdJefe = dto.IdJefe,
                 IdRol = dto.IdRol,
-                Estado = dto.Estado
+                Estado = dto.Estado,
+                Banco = dto.Banco,
+                NumeroCuenta = dto.NumeroCuenta,
+                TipoCuenta = dto.TipoCuenta,
             };
 
             _context.Empleados.Add(empleado);
@@ -125,6 +132,9 @@ namespace GHumanAPI.Services
             if (dto.Sueldo.HasValue) empleado.Sueldo = dto.Sueldo.Value;
             if (dto.IdRol.HasValue) empleado.IdRol = dto.IdRol.Value;
             if (dto.FechaI.HasValue) empleado.FechaI = dto.FechaI.Value;
+            if (dto.Banco != null) empleado.Banco = dto.Banco;
+            if (dto.NumeroCuenta != null) empleado.NumeroCuenta = dto.NumeroCuenta;
+            if (dto.TipoCuenta != null) empleado.TipoCuenta = dto.TipoCuenta;
 
             await _context.SaveChangesAsync();
             return await GetById(id);
@@ -213,7 +223,10 @@ namespace GHumanAPI.Services
                     NombreRol = e.Rol.Nombre,
                     Estado = e.Estado,
                     TieneUsuario = _context.Usuarios.Any(u => u.IdEmpleado == e.Id),
-                    FechaNacimiento = e.DatosSensibles != null ? e.DatosSensibles.FechaNacimiento.ToString("yyyy-MM-dd") : null
+                    FechaNacimiento = e.DatosSensibles != null ? e.DatosSensibles.FechaNacimiento.ToString("yyyy-MM-dd") : null,
+                    Banco = e.Banco,
+                    NumeroCuenta = e.NumeroCuenta,
+                    TipoCuenta = e.TipoCuenta,
                 })
                 .ToListAsync();
 

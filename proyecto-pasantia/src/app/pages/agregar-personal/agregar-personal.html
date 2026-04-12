@@ -82,7 +82,15 @@
         </svg>
         Reportes
       </div>
+      <div class="nav-item" *ngIf="tienePermiso('Gestionar roles')" [routerLink]="['/dashboard/nomina']">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="5" width="20" height="14" rx="2" />
+          <line x1="2" y1="10" x2="22" y2="10" />
+        </svg>
+        Nómina
+      </div>
     </aside>
+
 
     <!-- ══ CONTENT ══ -->
     <main class="content">
@@ -240,6 +248,34 @@
               <div class="form-field">
                 <label>Teléfono de Emergencia<span class="aterisco">*</span></label>
                 <input type="text" placeholder="809-000-0000" [(ngModel)]="nuevoEmpleado.telEmergencia">
+              </div>
+            </div>
+          </div>
+          <!-- SECCIÓN 5: Cuenta Bancaria -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <line x1="2" y1="10" x2="22" y2="10" />
+              </svg>
+              Cuenta Bancaria
+            </div>
+            <div class="form-section-grid">
+              <div class="form-field">
+                <label>Banco</label>
+                <input type="text" placeholder="Ej: Banco Popular" [(ngModel)]="nuevoEmpleado.banco">
+              </div>
+              <div class="form-field">
+                <label>Número de Cuenta</label>
+                <input type="text" placeholder="000-000000-0" [(ngModel)]="nuevoEmpleado.numeroCuenta">
+              </div>
+              <div class="form-field">
+                <label>Tipo de Cuenta</label>
+                <select [(ngModel)]="nuevoEmpleado.tipoCuenta">
+                  <option value="">Seleccionar</option>
+                  <option value="Ahorros">Ahorros</option>
+                  <option value="Corriente">Corriente</option>
+                </select>
               </div>
             </div>
           </div>

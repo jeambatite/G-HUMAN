@@ -12,6 +12,9 @@ namespace GHumanAPI.Models
         public int? IdJefe { get; set; }
         public int IdRol { get; set; }
         public string Estado { get; set; } = "activo";
+        public string Banco { get; set; } = string.Empty;
+        public string NumeroCuenta { get; set; } = string.Empty;
+        public string TipoCuenta { get; set; } = string.Empty;
 
         // Navegacion
         public Rol Rol { get; set; } = null!;
@@ -19,5 +22,8 @@ namespace GHumanAPI.Models
         public ICollection<Empleado> Subordinados { get; set; } = new List<Empleado>();
         public DatosSensible? DatosSensibles { get; set; }
         public Usuario? Usuario { get; set; }
+
+        //bono
+        public int BonoProximoPago { get; set; } = 0;
     }
 }

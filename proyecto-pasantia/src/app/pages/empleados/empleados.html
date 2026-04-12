@@ -82,7 +82,15 @@
         </svg>
         Reportes
       </div>
+      <div class="nav-item" *ngIf="tienePermiso('Gestionar roles')" [routerLink]="['/dashboard/nomina']">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="5" width="20" height="14" rx="2" />
+          <line x1="2" y1="10" x2="22" y2="10" />
+        </svg>
+        Nómina
+      </div>
     </aside>
+
 
     <!-- ══ CONTENT ══ -->
     <main class="content">
@@ -311,6 +319,22 @@
               <option *ngFor="let r of roles" [value]="r.id">{{ r.nombre }}</option>
             </select>
           </div>
+          <div class="form-field">
+            <label>Banco</label>
+            <input type="text" placeholder="Ej: Banco Popular" [(ngModel)]="empleadoSeleccionado.banco">
+          </div>
+          <div class="form-field">
+            <label>Número de Cuenta</label>
+            <input type="text" placeholder="000-000000-0" [(ngModel)]="empleadoSeleccionado.numeroCuenta">
+          </div>
+          <div class="form-field">
+            <label>Tipo de Cuenta</label>
+            <select [(ngModel)]="empleadoSeleccionado.tipoCuenta">
+              <option value="">Seleccionar</option>
+              <option value="Ahorros">Ahorros</option>
+              <option value="Corriente">Corriente</option>
+            </select>
+          </div>
         </div>
       </div>
       <div class="modal-foot">
@@ -441,4 +465,5 @@
       </div>
     </div>
   </div>
+
 </div>

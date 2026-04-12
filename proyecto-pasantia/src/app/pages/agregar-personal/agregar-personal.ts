@@ -31,7 +31,7 @@ export class AgregarPersonal implements OnInit {
     private rolService: RolService,
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     if (!this.authService.estaAutenticado()) {
@@ -60,27 +60,27 @@ export class AgregarPersonal implements OnInit {
 
   aplicarTema(): void {
     const vars: Record<string, string> = {
-      '--blue':       '#1d4ed8',
-      '--blue-dark':  '#1e40af',
+      '--blue': '#1d4ed8',
+      '--blue-dark': '#1e40af',
       '--blue-light': '#3b82f6',
-      '--blue-bg':    '#eff6ff',
-      '--blue-bd':    '#bfdbfe',
-      '--green':      '#16a34a',
-      '--green-bg':   '#f0fdf4',
-      '--green-bd':   '#bbf7d0',
-      '--red':        '#dc2626',
-      '--red-bg':     '#fef2f2',
-      '--red-bd':     '#fecaca',
-      '--white':      '#ffffff',
-      '--gray-50':    '#f8fafc',
-      '--gray-100':   '#f1f5f9',
-      '--gray-200':   '#e2e8f0',
-      '--gray-400':   '#64748b',
-      '--gray-600':   '#334155',
-      '--gray-900':   '#0f172a',
-      '--accent':     '#16a34a',
-      '--accent-bg':  '#f0fdf4',
-      '--accent-bd':  '#bbf7d0',
+      '--blue-bg': '#eff6ff',
+      '--blue-bd': '#bfdbfe',
+      '--green': '#16a34a',
+      '--green-bg': '#f0fdf4',
+      '--green-bd': '#bbf7d0',
+      '--red': '#dc2626',
+      '--red-bg': '#fef2f2',
+      '--red-bd': '#fecaca',
+      '--white': '#ffffff',
+      '--gray-50': '#f8fafc',
+      '--gray-100': '#f1f5f9',
+      '--gray-200': '#e2e8f0',
+      '--gray-400': '#64748b',
+      '--gray-600': '#334155',
+      '--gray-900': '#0f172a',
+      '--accent': '#16a34a',
+      '--accent-bg': '#f0fdf4',
+      '--accent-bd': '#bbf7d0',
     };
     Object.entries(vars).forEach(([key, value]) => {
       document.documentElement.style.setProperty(key, value);
@@ -103,7 +103,8 @@ export class AgregarPersonal implements OnInit {
       nombre: '', email: '', genero: '', idRol: 0, estado: 'activo',
       departamento: '', jefe: '', sueldo: 0, fechaI: '',
       tipoDocumento: '', numDocumento: '', tipoSangre: '',
-      fechaNacimiento: '', telefono: '', contactoEmergencia: '', telEmergencia: ''
+      fechaNacimiento: '', telefono: '', contactoEmergencia: '', telEmergencia: '',
+      banco: '', numeroCuenta: '', tipoCuenta: ''
     };
   }
 

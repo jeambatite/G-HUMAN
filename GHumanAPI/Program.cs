@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using GHumanAPI.Data;
 using GHumanAPI.Services;
+using Resend;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,21 +19,21 @@ var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
 
 // --- 2. CONFIGURACIÓN DE JWT ---
-var jwtKey      = builder.Configuration["Jwt:Key"]!;
-var jwtIssuer   = builder.Configuration["Jwt:Issuer"]!;
+var jwtKey = builder.Configuration["Jwt:Key"]!;
+var jwtIssuer = builder.Configuration["Jwt:Issuer"]!;
 var jwtAudience = builder.Configuration["Jwt:Audience"]!;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer           = true,
-            ValidateAudience         = true,
-            ValidateLifetime         = true,
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer              = jwtIssuer,
-            ValidAudience            = jwtAudience,
-            IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
     });
 
@@ -70,6 +71,13 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddHttpClient<IResend, ResendClient>();
+builder.Services.Configure<ResendClientOptions>(options =>
+{
+    options.ApiToken = Environment.GetEnvironmentVariable("Resend__ApiKey")
+        ?? builder.Configuration["Resend:ApiKey"]!;
+});
 
 var app = builder.Build();
 

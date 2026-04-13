@@ -80,7 +80,7 @@
         </svg>
         Reportes
       </div>
-      <div class="nav-item active" *ngIf="tienePermiso('Gestionar roles')">
+      <div class="nav-item" *ngIf="tienePermiso('Ver nomina')" [routerLink]="['/dashboard/nomina']">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="2" y="5" width="20" height="14" rx="2" />
           <line x1="2" y1="10" x2="22" y2="10" />
@@ -289,12 +289,39 @@
       </div>
 
       <!-- ══ HISTORIAL ══ -->
+      <!-- ══ HISTORIAL ══ -->
       <div class="block" *ngIf="historial.length > 0">
         <div class="block-head">
           <span class="block-title">Historial de Pagos</span>
-          <span class="block-badge">{{ historial.length }} registros</span>
+          <div class="block-head-right">
+            <button class="btn-clear" *ngIf="hayFiltrosHistorialActivos()" (click)="limpiarFiltrosHistorial()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+              Limpiar filtros
+            </button>
+            <span class="block-badge">{{ historialFiltrado.length }} registros</span>
+          </div>
         </div>
         <div class="block-body">
+          <div class="historial-filtros">
+            <div class="form-field">
+              <label>Nombre Empleado</label>
+              <input class="filter-input" type="text" placeholder="Buscar..." [(ngModel)]="filtrosHistorial.nombre"
+                (ngModelChange)="detectarCambios()">
+            </div>
+            <div class="form-field">
+              <label>Fecha Desde</label>
+              <input class="filter-input" type="date" [(ngModel)]="filtrosHistorial.fechaDesde"
+                (ngModelChange)="detectarCambios()">
+            </div>
+            <div class="form-field">
+              <label>Fecha Hasta</label>
+              <input class="filter-input" type="date" [(ngModel)]="filtrosHistorial.fechaHasta"
+                (ngModelChange)="detectarCambios()">
+            </div>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -308,16 +335,45 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let p of historial; let i = index">
-                  <td class="td-num">{{ i + 1 }}</td>
+                <tr *ngFor="let p of historialPaginado; let i = index">
+                  <td class="td-num">{{ (paginaHistorial - 1) * tamanoPaginaHistorial + i + 1 }}</td>
                   <td class="td-name">{{ p.nombreEmpleado }}</td>
                   <td>{{ p.fechaPago | date:'dd/MM/yyyy HH:mm' }}</td>
                   <td class="td-sueldo">${{ p.montoBase | number }}</td>
                   <td class="td-sueldo">${{ p.montoBono | number }}</td>
                   <td class="td-sueldo"><strong>${{ p.montoTotal | number }}</strong></td>
                 </tr>
+                <tr *ngIf="historialFiltrado.length === 0">
+                  <td colspan="6" class="td-empty">Sin resultados</td>
+                </tr>
               </tbody>
             </table>
+          </div>
+
+          <!-- PAGINACIÓN HISTORIAL -->
+          <div class="paginacion">
+            <div class="paginacion-left">
+              <span class="paginacion-info">
+                Mostrando {{ (paginaHistorial - 1) * tamanoPaginaHistorial + 1 }} -
+                {{ paginaHistorial * tamanoPaginaHistorial > historialFiltrado.length ? historialFiltrado.length :
+                paginaHistorial * tamanoPaginaHistorial }}
+                de {{ historialFiltrado.length }} registros
+              </span>
+            </div>
+            <div class="paginacion-right">
+              <button class="btn-pag" (click)="cambiarPaginaHistorial(1)" [disabled]="paginaHistorial === 1">«</button>
+              <button class="btn-pag" (click)="cambiarPaginaHistorial(paginaHistorial - 1)"
+                [disabled]="paginaHistorial === 1">‹</button>
+              <ng-container *ngFor="let p of paginasHistorial">
+                <button class="btn-pag" *ngIf="p !== '...'" [class.active]="p === paginaHistorial"
+                  (click)="cambiarPaginaHistorial(+p)">{{ p }}</button>
+                <span class="btn-pag-dots" *ngIf="p === '...'">...</span>
+              </ng-container>
+              <button class="btn-pag" (click)="cambiarPaginaHistorial(paginaHistorial + 1)"
+                [disabled]="paginaHistorial === totalPaginasHistorial">›</button>
+              <button class="btn-pag" (click)="cambiarPaginaHistorial(totalPaginasHistorial)"
+                [disabled]="paginaHistorial === totalPaginasHistorial">»</button>
+            </div>
           </div>
         </div>
       </div>

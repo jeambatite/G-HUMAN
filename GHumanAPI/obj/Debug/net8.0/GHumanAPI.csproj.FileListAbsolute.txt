@@ -425,3 +425,6 @@ C:\Users\eloza\OneDrive\Escritorio\New folder (2)\GHumanAPI\obj\Debug\net8.0\ref
 C:\Users\eloza\OneDrive\Escritorio\New folder (2)\GHumanAPI\obj\Debug\net8.0\GHumanAPI.pdb
 C:\Users\eloza\OneDrive\Escritorio\New folder (2)\GHumanAPI\obj\Debug\net8.0\GHumanAPI.genruntimeconfig.cache
 C:\Users\eloza\OneDrive\Escritorio\New folder (2)\GHumanAPI\obj\Debug\net8.0\ref\GHumanAPI.dll
+C:\Users\eloza\OneDrive\Escritorio\New folder (2)\GHumanAPI\bin\Debug\net8.0\Microsoft.AspNetCore.WebUtilities.dll
+C:\Users\eloza\OneDrive\Escritorio\New folder (2)\GHumanAPI\bin\Debug\net8.0\Microsoft.Net.Http.Headers.dll
+C:\Users\eloza\OneDrive\Escritorio\New folder (2)\GHumanAPI\bin\Debug\net8.0\Resend.dll

@@ -4,6 +4,7 @@ using GHumanAPI.DTOs;
 using GHumanAPI.Models;
 using System.Net;
 using System.Net.Mail;
+using Resend;
 
 namespace GHumanAPI.Services
 {
@@ -12,10 +13,14 @@ namespace GHumanAPI.Services
         private readonly AppDbContext _context;
         private readonly IConfiguration _config;
 
-        public NominaService(AppDbContext context, IConfiguration config)
+        private readonly IResend _resend;
+
+
+        public NominaService(AppDbContext context, IConfiguration config, IResend resend)
         {
             _context = context;
             _config = config;
+            _resend = resend;
         }
 
         public async Task<List<NominaEmpleadoDTO>> GetEmpleadosNomina()
@@ -25,16 +30,16 @@ namespace GHumanAPI.Services
                 .Where(e => e.Estado == "activo" || e.Estado == "vacaciones")
                 .Select(e => new NominaEmpleadoDTO
                 {
-                    Id              = e.Id,
-                    Nombre          = e.Nombre,
-                    Departamento    = e.Departamento,
-                    NombreRol       = e.Rol.Nombre,
-                    Sueldo          = e.Sueldo,
+                    Id = e.Id,
+                    Nombre = e.Nombre,
+                    Departamento = e.Departamento,
+                    NombreRol = e.Rol.Nombre,
+                    Sueldo = e.Sueldo,
                     BonoProximoPago = e.BonoProximoPago,
-                    Banco           = e.Banco,
-                    NumeroCuenta    = e.NumeroCuenta,
-                    TipoCuenta      = e.TipoCuenta,
-                    Estado          = e.Estado
+                    Banco = e.Banco,
+                    NumeroCuenta = e.NumeroCuenta,
+                    TipoCuenta = e.TipoCuenta,
+                    Estado = e.Estado
                 })
                 .ToListAsync();
         }
@@ -45,10 +50,10 @@ namespace GHumanAPI.Services
             if (config == null) return null;
             return new EmpresaConfigDTO
             {
-                BalanceActual    = config.BalanceActual,
-                UltimaNominaMes  = config.UltimaNominaMes,
-                DiaPago          = config.DiaPago,
-                EmailAdmin       = config.EmailAdmin
+                BalanceActual = config.BalanceActual,
+                UltimaNominaMes = config.UltimaNominaMes,
+                DiaPago = config.DiaPago,
+                EmailAdmin = config.EmailAdmin
             };
         }
 
@@ -81,13 +86,13 @@ namespace GHumanAPI.Services
                 .OrderByDescending(n => n.FechaPago)
                 .Select(n => new NominaPagoDTO
                 {
-                    Id              = n.Id,
-                    EmpleadoId      = n.EmpleadoId,
-                    NombreEmpleado  = n.Empleado.Nombre,
-                    FechaPago       = n.FechaPago,
-                    MontoBase       = n.MontoBase,
-                    MontoBono       = n.MontoBono,
-                    MontoTotal      = n.MontoTotal
+                    Id = n.Id,
+                    EmpleadoId = n.EmpleadoId,
+                    NombreEmpleado = n.Empleado.Nombre,
+                    FechaPago = n.FechaPago,
+                    MontoBase = n.MontoBase,
+                    MontoBono = n.MontoBono,
+                    MontoTotal = n.MontoTotal
                 })
                 .ToListAsync();
         }
@@ -110,16 +115,16 @@ namespace GHumanAPI.Services
                 try
                 {
                     decimal factorBono = emp.BonoProximoPago / 100.0m;
-                    decimal montoBono  = emp.Sueldo * factorBono;
+                    decimal montoBono = emp.Sueldo * factorBono;
                     decimal montoTotal = emp.Sueldo + montoBono;
 
                     // Registrar pago
                     _context.NominaPagos.Add(new NominaPago
                     {
                         EmpleadoId = emp.Id,
-                        FechaPago  = DateTime.UtcNow,
-                        MontoBase  = emp.Sueldo,
-                        MontoBono  = montoBono,
+                        FechaPago = DateTime.UtcNow,
+                        MontoBase = emp.Sueldo,
+                        MontoBono = montoBono,
                         MontoTotal = montoTotal
                     });
 
@@ -194,20 +199,15 @@ namespace GHumanAPI.Services
         {
             try
             {
-                var smtpPassword = _config["Smtp:Password"];
-
-                var client = new SmtpClient("smtp.gmail.com", 587)
+                var message = new EmailMessage
                 {
-                    EnableSsl   = true,
-                    Credentials = new NetworkCredential(emailAdmin, smtpPassword)
+                    From = $"G-HUMAN <onboarding@resend.dev>",
+                    To = { destino },
+                    Subject = asunto,
+                    HtmlBody = cuerpo
                 };
 
-                var mensaje = new MailMessage(emailAdmin, destino, asunto, cuerpo)
-                {
-                    IsBodyHtml = true
-                };
-
-                await client.SendMailAsync(mensaje);
+                await _resend.EmailSendAsync(message);
             }
             catch (Exception ex)
             {

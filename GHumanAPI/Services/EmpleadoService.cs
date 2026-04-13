@@ -8,10 +8,12 @@ namespace GHumanAPI.Services
     public class EmpleadoService : IEmpleadoService
     {
         private readonly AppDbContext _context;
+        private readonly IConfiguration _config;
 
-        public EmpleadoService(AppDbContext context)
+        public EmpleadoService(AppDbContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
 
         public async Task<List<EmpleadoDTO>> GetAll()
@@ -72,6 +74,7 @@ namespace GHumanAPI.Services
 
         public async Task<EmpleadoDTO> Crear(CrearEmpleadoDTO dto)
         {
+
             // Verificar email duplicado
             if (await _context.Empleados.AnyAsync(e => e.Email == dto.Email))
                 throw new InvalidOperationException("EMAIL_DUPLICADO");
@@ -79,6 +82,7 @@ namespace GHumanAPI.Services
             // Verificar documento duplicado
             if (await _context.Datos_sensibles.AnyAsync(d => d.NumDocumento == dto.NumDocumento))
                 throw new InvalidOperationException("DOCUMENTO_DUPLICADO");
+
             var empleado = new Empleado
             {
                 Genero = dto.Genero,
@@ -97,6 +101,7 @@ namespace GHumanAPI.Services
 
             _context.Empleados.Add(empleado);
             await _context.SaveChangesAsync();
+            await AgregarContactoResend(empleado.Email, empleado.Nombre);
 
             // Crear datos sensibles
             var datosSensibles = new DatosSensible
@@ -137,12 +142,18 @@ namespace GHumanAPI.Services
             if (dto.TipoCuenta != null) empleado.TipoCuenta = dto.TipoCuenta;
 
             await _context.SaveChangesAsync();
+            if (dto.Email != null && dto.Email != empleado.Email)
+            {
+                await EliminarContactoResend(empleado.Email);
+                await AgregarContactoResend(dto.Email, empleado.Nombre);
+            }
             return await GetById(id);
         }
 
 
         public async Task<bool> Eliminar(int id)
         {
+            
             var empleado = await _context.Empleados.FindAsync(id);
             if (empleado == null) return false;
 
@@ -158,6 +169,7 @@ namespace GHumanAPI.Services
             var usuario = await _context.Usuarios
                 .FirstOrDefaultAsync(u => u.IdEmpleado == id);
             if (usuario != null) _context.Usuarios.Remove(usuario);
+            await EliminarContactoResend(empleado.Email);
 
             _context.Empleados.Remove(empleado);
             await _context.SaveChangesAsync();
@@ -238,6 +250,55 @@ namespace GHumanAPI.Services
                 TamanoPagina = tamanoPagina,
                 TotalPaginas = (int)Math.Ceiling((double)total / tamanoPagina)
             };
+        }
+        private async Task AgregarContactoResend(string email, string nombre)
+        {
+            try
+            {
+                var apiKey = Environment.GetEnvironmentVariable("Resend__ApiKey")
+                    ?? _config["Resend:ApiKey"];
+                var audienceId = Environment.GetEnvironmentVariable("Resend__AudienceId")
+                    ?? _config["Resend:AudienceId"];
+
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
+                var partes = nombre.Split(' ');
+                var body = new
+                {
+                    email = email,
+                    first_name = partes[0],
+                    last_name = partes.Length > 1 ? partes[1] : "",
+                    unsubscribed = false
+                };
+
+                var json = System.Text.Json.JsonSerializer.Serialize(body);
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                await client.PostAsync($"https://api.resend.com/audiences/{audienceId}/contacts", content);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error agregando contacto a Resend: {ex.Message}");
+            }
+        }
+
+        private async Task EliminarContactoResend(string email)
+        {
+            try
+            {
+                var apiKey = Environment.GetEnvironmentVariable("Resend__ApiKey")
+                    ?? _config["Resend:ApiKey"];
+                var audienceId = Environment.GetEnvironmentVariable("Resend__AudienceId")
+                    ?? _config["Resend:AudienceId"];
+
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+                await client.DeleteAsync($"https://api.resend.com/audiences/{audienceId}/contacts/{email}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error eliminando contacto de Resend: {ex.Message}");
+            }
         }
     }
 }

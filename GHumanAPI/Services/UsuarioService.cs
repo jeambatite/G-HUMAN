@@ -8,10 +8,12 @@ namespace GHumanAPI.Services
     public class UsuarioService : IUsuarioService
     {
         private readonly AppDbContext _context;
+        private readonly IConfiguration _config;
 
-        public UsuarioService(AppDbContext context)
+        public UsuarioService(AppDbContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
 
         public async Task<bool> TieneUsuario(int idEmpleado)
@@ -42,6 +44,9 @@ namespace GHumanAPI.Services
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
 
+            // Agregar email a Resend Audiences
+           
+
             return new UsuarioDTO
             {
                 Id = usuario.Id,
@@ -50,5 +55,6 @@ namespace GHumanAPI.Services
                 Activo = usuario.Activo
             };
         }
+        
     }
 }

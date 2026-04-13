@@ -88,7 +88,7 @@ export class Nomina implements OnInit {
       this.router.navigate(['/']);
       return;
     }
-    if (!this.authService.tienePermiso('Gestionar roles')) {
+    if (!this.authService.tienePermiso('Ver nomina')) {
       this.router.navigate(['/dashboard']);
       return;
     }
@@ -238,6 +238,66 @@ export class Nomina implements OnInit {
     }).catch(() => {
       this.mostrarNotificacion('Error guardando algunos bonos.', 'error');
     });
+  }
+  //filtro nomina y paginado
+  filtrosHistorial = { nombre: '', fechaDesde: '', fechaHasta: '' };
+  paginaHistorial: number = 1;
+  tamanoPaginaHistorial: number = 10;
+  private historialTimeout: any = null;
+
+  get historialFiltrado(): any[] {
+    return this.historial.filter(p => {
+      const matchNombre = !this.filtrosHistorial.nombre ||
+        p.nombreEmpleado.toLowerCase().includes(this.filtrosHistorial.nombre.toLowerCase());
+      const matchDesde = !this.filtrosHistorial.fechaDesde ||
+        new Date(p.fechaPago) >= new Date(this.filtrosHistorial.fechaDesde);
+      const matchHasta = !this.filtrosHistorial.fechaHasta ||
+        new Date(p.fechaPago) <= new Date(this.filtrosHistorial.fechaHasta);
+      return matchNombre && matchDesde && matchHasta;
+    });
+  }
+
+  get historialPaginado(): any[] {
+    const inicio = (this.paginaHistorial - 1) * this.tamanoPaginaHistorial;
+    return this.historialFiltrado.slice(inicio, inicio + this.tamanoPaginaHistorial);
+  }
+
+  get totalPaginasHistorial(): number {
+    return Math.ceil(this.historialFiltrado.length / this.tamanoPaginaHistorial);
+  }
+
+  get paginasHistorial(): (number | string)[] {
+    const total = this.totalPaginasHistorial;
+    if (total <= 15) return Array.from({ length: total }, (_, i) => i + 1);
+    const result: (number | string)[] = [];
+    for (let i = 1; i <= 10; i++) result.push(i);
+    if (this.paginaHistorial > 10 && this.paginaHistorial <= total - 5) {
+      result.push('...');
+      for (let i = this.paginaHistorial - 1; i <= this.paginaHistorial + 1; i++) result.push(i);
+    }
+    result.push('...');
+    for (let i = total - 4; i <= total; i++) result.push(i);
+    return [...new Set(result)];
+  }
+
+  cambiarPaginaHistorial(pagina: number): void {
+    if (pagina < 1 || pagina > this.totalPaginasHistorial) return;
+    this.paginaHistorial = pagina;
+    this.cdr.detectChanges();
+  }
+
+  limpiarFiltrosHistorial(): void {
+    this.filtrosHistorial = { nombre: '', fechaDesde: '', fechaHasta: '' };
+    this.paginaHistorial = 1;
+    this.cdr.detectChanges();
+  }
+
+  hayFiltrosHistorialActivos(): boolean {
+    return Object.values(this.filtrosHistorial).some(v => v !== '');
+  }
+
+  detectarCambios(): void {
+    this.cdr.detectChanges();
   }
 
 

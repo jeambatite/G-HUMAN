@@ -969,3 +969,54 @@
     opacity: 1;
   }
 }
+
+/* ── AJUSTE DE TAMAÑO DEL MODAL ── */
+.modal {
+  background: #ffffff !important;
+  width: 95% !important;
+  max-width: 600px !important;
+  
+  /* CLAVE: Limita la altura total al 90% de la ventana */
+  max-height: 90vh !important; 
+  
+  border-radius: 16px !important;
+  display: flex !important;
+  flex-direction: column !important; /* Mantiene head y foot fijos */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  overflow: hidden !important;
+}
+
+/* ── SCROLL INTERNO EN EL BODY ── */
+.modal-body {
+  padding: 24px 32px !important;
+  
+  /* CLAVE: Si el contenido es muy largo, permite scroll aquí dentro */
+  overflow-y: auto !important; 
+  flex: 1 !important; /* Empuja el footer hacia abajo */
+  
+  /* Estilo para el scrollbar (opcional para que se vea limpio) */
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #e2e8f0 !important;
+  border-radius: 10px !important;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #1e50e2 !important;
+}
+
+/* ── MANTENER EL FOOTER SIEMPRE VISIBLE ── */
+.modal-foot {
+  padding: 16px 32px !important;
+  background: #f8fafc !important;
+  border-top: 1px solid #e2e8f0 !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
+  flex-shrink: 0 !important; /* Evita que el footer se achique */
+}

@@ -45,7 +45,7 @@
         </svg>
         Inicio
       </div>
-      <div class="nav-item" *ngIf="tienePermiso('Ver personal')" [routerLink]="['/dashboard/empleados']">
+      <div class="nav-item" *ngIf="tienePermiso('Ver personal') " [routerLink]="['/dashboard/empleados']">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
           <circle cx="9" cy="7" r="4" />
@@ -62,7 +62,7 @@
           </svg>
           Roles y Permisos
         </div>
-        <div class="nav-item active" *ngIf="tienePermiso('Agregar personal')">
+        <div class="nav-item active" *ngIf="tienePermiso('Agregar personal')" [routerLink]="['/dashboard/agregar']">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
             <circle cx="9" cy="7" r="4" />

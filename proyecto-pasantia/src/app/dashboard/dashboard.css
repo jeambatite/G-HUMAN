@@ -25,19 +25,22 @@
 
 /* ══ TOPBAR (Fijo arriba) ══ */
 .topbar {
+  height: 80px;
+  background-color: #ffffff;
+  border-bottom: 2px solid #cbd5e1; /* Consistente con el borde del sidebar */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 2rem;
-  background: var(--bg-white);
-  border-bottom: 2px solid var(--border-color);
-  z-index: 100;
+  padding: 0 40px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .topbar-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 15px;
 }
 
 .avatar {
@@ -110,46 +113,108 @@
   /* Ocupa el resto de la pantalla */
 }
 
-/* ══ SIDEBAR (Izquierda) ══ */
+/* ══ CONTENEDOR LATERAL (SIDEBAR) ══ */
 .sidebar {
-  width: 300px;
-  background: var(--bg-white);
-  border-right: 2px solid var(--border-color);
-  padding: 2rem 1rem;
+  width: 280px;
+  background-color: #ffffff;
+  border-right: 2px solid #cbd5e1; /* Borde definido para separar del contenido */
+  height: calc(100vh - 80px);    /* Ajustado a la altura del Topbar */
+  padding: 2rem 1.2rem;
+  position: sticky;
+  top: 80px;                     /* Se mantiene fijo al hacer scroll */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 900;
 }
 
+/* ══ SECCIONES DE TÍTULO (Menú, Administración, etc.) ══ */
 .nav-section {
   font-size: 0.85rem;
   font-weight: 800;
-  color: var(--text-soft);
+  color: #94a3b8;
   text-transform: uppercase;
-  margin: 1.5rem 0 0.8rem 1rem;
-  letter-spacing: 0.5px;
-  
+  letter-spacing: 1.2px;
+  margin: 1.5rem 0 0.5rem 0.8rem;
 }
 
 .nav-item {
-  padding: 14px 1rem;
-  border-radius: 10px;
-  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  color: #475569;
+  font-weight: 700;
+  font-size: 1.1rem; /* Texto grande y legible */
+  text-decoration: none;
   cursor: pointer;
-  font-size: 1.15rem;
-  /* Más grande para legibilidad */
-  font-weight: 500;
-  color: var(--text-soft);
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent; /* Reserva espacio para el hover */
 }
 
 .nav-item:hover {
-  background: #f8fafc;
-  color: var(--primary);
+  background-color: #f1f5f9;
+  color: #0f172a;
+  transform: translateX(4px); /* Pequeño desplazamiento visual */
 }
 
 .nav-item.active {
-  background: var(--primary);
-  color: white;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  background-color: #6366f1; /* Púrpura G-HUMAN */
+  color: #ffffff;
+  border-color: #4f46e5;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
+
+.nav-item svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.5px; /* Iconos más gruesos para mejor visibilidad */
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 80px;
+    padding: 2rem 0.5rem;
+    align-items: center;
+  }
+  
+  .nav-section, .nav-item span:not(.nav-icon) {
+    display: none; /* Oculta texto en pantallas pequeñas */
+  }
+  
+  .nav-item {
+    justify-content: center;
+    padding: 14px;
+  }
+}
+
+/* ══ SECCIÓN CENTRAL: LOGO ══ */
+.topbar-center {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -1px;
+}
+
+.logo span {
+  color: #6366f1;
+}
+
+.logo-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #cbd5e1;
+  border-radius: 50%;
+}
+
 
 /* ══ CONTENT (Derecha) ══ */
 .content {
@@ -549,20 +614,24 @@
 
 /* ══ LOG OUT (Botón con Hover Mejorado) ══ */
 .btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background-color: #ffffff;
   color: #dc2626;
-  /* Rojo empresarial */
   border: 2px solid #fecaca;
-  padding: 10px 24px;
+  padding: 10px 20px;
   border-radius: 12px;
-  font-size: 1.1rem;
   font-weight: 700;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  /* Transición suave */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
-
+.btn-logout svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
 /* ══ HOVER DINÁMICO ══ */
 .btn-logout:hover {
   background-color: #dc2626;

@@ -262,15 +262,15 @@
             </div>
             <div class="form-section-grid">
               <div class="form-field">
-                <label>Banco</label>
+                <label>Banco<span class="aterisco">*</span></label>
                 <input type="text" placeholder="Ej: Banco Popular" [(ngModel)]="nuevoEmpleado.banco">
               </div>
               <div class="form-field">
-                <label>Número de Cuenta</label>
+                <label>Número de Cuenta<span class="aterisco">*</span></label>
                 <input type="text" placeholder="000-000000-0" [(ngModel)]="nuevoEmpleado.numeroCuenta">
               </div>
               <div class="form-field">
-                <label>Tipo de Cuenta</label>
+                <label>Tipo de Cuenta<span class="aterisco">*</span></label>
                 <select [(ngModel)]="nuevoEmpleado.tipoCuenta">
                   <option value="">Seleccionar</option>
                   <option value="Ahorros">Ahorros</option>

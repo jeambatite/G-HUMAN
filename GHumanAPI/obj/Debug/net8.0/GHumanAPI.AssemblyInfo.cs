@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GHumanAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+db666aa95d9716c03bb09430415b8f78ca28dfdf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6abf506375505e74b5246f8f7f136b7914de38ab")]
 [assembly: System.Reflection.AssemblyProductAttribute("GHumanAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GHumanAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

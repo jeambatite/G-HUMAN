@@ -18,7 +18,7 @@ COPY --from=build /app/dist/*/browser /usr/share/nginx/html
 
 # Configuración para rutas de Angular (F5 fix)
 RUN printf 'server { \n\
-    listen 80; \n\
+    listen 8080; \n\
     location / { \n\
         root /usr/share/nginx/html; \n\
         index index.html; \n\

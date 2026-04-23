@@ -109,14 +109,14 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// 1. Enrutamiento primero
-app.UseRouting(); 
+// ✅ 1. CORS PRIMERO - Antes de todo lo demás
+app.UseCors("AllowRailwayFront");
 
-// 2. CORS inmediatamente después de Routing
-app.UseCors("AllowRailwayFront"); 
+// 2. Routing
+app.UseRouting();
 
-// 3. Redirección (Opcional, a veces causa problemas con CORS en Railway, prueba comentarlo si sigue fallando)
-app.UseHttpsRedirection(); 
+// 3. Redirección HTTPS (coméntalo si sigue fallando en Railway)
+// app.UseHttpsRedirection(); 
 
 app.UseStaticFiles();
 
@@ -124,7 +124,7 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 5. Mapeo
+// 5. Mapeo de endpoints
 app.MapControllers();
 
 app.Run();

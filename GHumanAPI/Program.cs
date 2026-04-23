@@ -99,7 +99,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 // --- 6. MIDDLEWARE PIPELINE ---
-app.UseRouting();
+
 app.UseDeveloperExceptionPage();
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -115,5 +115,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.UseRouting();
 app.Run();

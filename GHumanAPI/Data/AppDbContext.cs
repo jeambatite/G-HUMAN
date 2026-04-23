@@ -15,6 +15,8 @@ namespace GHumanAPI.Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<EmpresaConfig> EmpresaConfig { get; set; }
         public DbSet<NominaPago> NominaPagos { get; set; }
+        public DbSet<Postulante> Postulantes { get; set; }
+        public DbSet<FiltroAts> FiltrosAts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -121,16 +123,16 @@ namespace GHumanAPI.Data
             modelBuilder.Entity<EmpresaConfig>().ToTable("empresa_config");
             modelBuilder.Entity<NominaPago>().ToTable("nomina_pagos");
 
-             modelBuilder.Entity<EmpresaConfig>(ec =>
-            {
-                ec.Property(x => x.BalanceActual).HasColumnName("balance_actual").HasColumnType("decimal(18,2)");
-                ec.Property(x => x.UltimaNominaMes).HasColumnName("ultima_nomina_mes");
-                ec.Property(x => x.DiaPago).HasColumnName("dia_pago");
-                ec.Property(x => x.EmailAdmin).HasColumnName("email_admin");
-                ec.Property(x => x.SmtpPasswordHash).HasColumnName("smtp_password_hash");
-                ec.Property(x => x.TestRunKeyHash).HasColumnName("test_run_key_hash");
-                ec.Property(x => x.LimiteAusencias).HasColumnName("limiteausencias");
-            });
+            modelBuilder.Entity<EmpresaConfig>(ec =>
+           {
+               ec.Property(x => x.BalanceActual).HasColumnName("balance_actual").HasColumnType("decimal(18,2)");
+               ec.Property(x => x.UltimaNominaMes).HasColumnName("ultima_nomina_mes");
+               ec.Property(x => x.DiaPago).HasColumnName("dia_pago");
+               ec.Property(x => x.EmailAdmin).HasColumnName("email_admin");
+               ec.Property(x => x.SmtpPasswordHash).HasColumnName("smtp_password_hash");
+               ec.Property(x => x.TestRunKeyHash).HasColumnName("test_run_key_hash");
+               ec.Property(x => x.LimiteAusencias).HasColumnName("limiteausencias");
+           });
 
             modelBuilder.Entity<NominaPago>(np =>
             {
@@ -142,13 +144,35 @@ namespace GHumanAPI.Data
                 np.HasOne(x => x.Empleado).WithMany().HasForeignKey(x => x.EmpleadoId);
             });
 
-                        modelBuilder.Entity<Empleado>(e =>
+            modelBuilder.Entity<Empleado>(e =>
             {
                 e.Property(x => x.BonoProximoPago).HasColumnName("bono_proximo_pago");
                 e.Property(x => x.Banco).HasColumnName("banco");
                 e.Property(x => x.NumeroCuenta).HasColumnName("numero_cuenta");
                 e.Property(x => x.TipoCuenta).HasColumnName("tipo_cuenta");
                 e.Property(x => x.Ausencias).HasColumnName("ausencias");
+            });
+
+            //filtros ats
+            modelBuilder.Entity<Postulante>().ToTable("postulantes");
+            modelBuilder.Entity<FiltroAts>().ToTable("filtros_ats");
+
+            modelBuilder.Entity<Postulante>(p =>
+            {
+                p.Property(x => x.PuestoAplicado).HasColumnName("puesto_aplicado");
+                p.Property(x => x.ExperienciaAnios).HasColumnName("experiencia_anios");
+                p.Property(x => x.NivelEducacion).HasColumnName("nivel_educacion");
+                p.Property(x => x.CvUrl).HasColumnName("cv_url");
+                p.Property(x => x.CvTexto).HasColumnName("cv_texto");
+                p.Property(x => x.FechaPostulacion).HasColumnName("fecha_postulacion");
+                p.Property(x => x.Notas).HasColumnName("notas");
+            });
+
+            modelBuilder.Entity<FiltroAts>(f =>
+            {
+                f.Property(x => x.PalabrasClave).HasColumnName("palabras_clave");
+                f.Property(x => x.Activo).HasColumnName("activo");
+                f.Property(x => x.CreadoEn).HasColumnName("creado_en");
             });
         }
     }

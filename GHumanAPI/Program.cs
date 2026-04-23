@@ -62,6 +62,7 @@ builder.Services.AddScoped<IPermisoService, PermisoService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<INominaService, NominaService>();
 builder.Services.AddHostedService<GHumanAPI.BackgroundServices.NominaBackgroundService>();
+builder.Services.AddScoped<IReclutamientoService, ReclutamientoService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -104,9 +105,10 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseCors("AllowRailwayFront");
 app.UseRouting();
 
-app.UseCors("AllowRailwayFront");
+
 
 app.UseAuthentication();
 app.UseAuthorization();

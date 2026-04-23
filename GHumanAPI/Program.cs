@@ -104,10 +104,10 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRouting();
 
 app.UseCors("AllowRailwayFront");
 
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 

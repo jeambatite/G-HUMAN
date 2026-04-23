@@ -15,8 +15,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://*:{port}");
+// Railway handles port binding automatically via environment variables (HTTP_PORTS / URLS).
+// Do NOT call UseUrls here — it conflicts with Railway's port configuration.
 
 // --- 2. CONFIGURACIÓN DE JWT ---
 var jwtKey = builder.Configuration["Jwt:Key"]!;
@@ -110,11 +110,11 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// 1. Enrutamiento primero
-app.UseRouting(); 
+// 1. CORS must run BEFORE routing to intercept OPTIONS preflight requests
+app.UseCors("AllowRailwayFront");
 
-// 2. CORS inmediatamente después de Routing
-app.UseCors("AllowRailwayFront"); 
+// 2. Routing after CORS
+app.UseRouting();
 
 // 3. Redirección (Opcional, a veces causa problemas con CORS en Railway, prueba comentarlo si sigue fallando)
 // app.UseHttpsRedirection(); 

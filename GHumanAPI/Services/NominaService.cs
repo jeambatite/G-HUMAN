@@ -53,7 +53,8 @@ namespace GHumanAPI.Services
                 BalanceActual = config.BalanceActual,
                 UltimaNominaMes = config.UltimaNominaMes,
                 DiaPago = config.DiaPago,
-                EmailAdmin = config.EmailAdmin
+                EmailAdmin = config.EmailAdmin,
+                LimiteAusencias = config.LimiteAusencias
             };
         }
 
@@ -213,6 +214,17 @@ namespace GHumanAPI.Services
             {
                 Console.WriteLine($"Error enviando email a {destino}: {ex.Message}");
             }
+        }
+        public async Task<bool> ActualizarLimiteAusencias(int limite)
+        {
+            if (limite < 1 || limite > 365) return false;
+
+            var config = await _context.EmpresaConfig.FirstOrDefaultAsync();
+            if (config == null) return false;
+
+            config.LimiteAusencias = limite;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { EmpleadoService } from '../../services/empleado.service';
 import { RolService } from '../../services/rol.service';
 import { UsuarioService } from '../../services/usuario.service';
+import { NominaService } from '../../services/nomina.service';
 
 @Component({
   selector: 'app-empleados',
@@ -15,6 +16,7 @@ import { UsuarioService } from '../../services/usuario.service';
   styleUrl: './empleados.css',
 })
 export class Empleados implements OnInit {
+  limiteAusencias: number = 3;
   //variable
   paginaActual: number = 1;
   tamanoPagina: number = 10;
@@ -63,7 +65,8 @@ export class Empleados implements OnInit {
     private rolService: RolService,
     private usuarioService: UsuarioService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private nominaService: NominaService,
   ) { }
 
   ngOnInit(): void {
@@ -75,9 +78,15 @@ export class Empleados implements OnInit {
       this.router.navigate(['/dashboard']);
       return;
     }
+
     //this.aplicarTema();
     this.cargarEmpleados();
     this.cargarRoles();
+
+    this.nominaService.getConfig().subscribe({
+      next: (data) => { this.limiteAusencias = data.limiteAusencias; },
+      error: (err) => console.error(err)
+    });
 
     // Verificar sesión cada minuto
     setInterval(() => {
@@ -255,6 +264,35 @@ export class Empleados implements OnInit {
     this.paginaActual = 1;
     this.cargarEmpleados();
   }
+
+  agregarAusencia(emp: any): void {
+    this.empleadoService.agregarAusencia(emp.id).subscribe({
+      next: (data) => {
+        emp.ausencias = data.ausencias;
+        emp.estado = data.estado;
+        if (data.suspendido) {
+          this.mostrarNotificacion(`${emp.nombre} ha sido suspendido por alcanzar el límite de ausencias.`, 'error');
+        } else {
+          this.mostrarNotificacion(`Ausencia registrada para ${emp.nombre}. Total: ${data.ausencias}`);
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error registrando ausencia', err)
+    });
+  }
+  quitarAusencia(emp: any): void {
+    this.empleadoService.quitarAusencia(emp.id).subscribe({
+      next: (data) => {
+        emp.ausencias = data.ausencias;
+        emp.estado = data.estado;
+        this.mostrarNotificacion(`Ausencia eliminada para ${emp.nombre}. Total: ${data.ausencias}`);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error quitando ausencia', err)
+    });
+  }
+
+
 
   get paginas(): (number | string)[] {
     const total = this.totalPaginas;

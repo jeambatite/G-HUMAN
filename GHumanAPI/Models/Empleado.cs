@@ -15,6 +15,7 @@ namespace GHumanAPI.Models
         public string Banco { get; set; } = string.Empty;
         public string NumeroCuenta { get; set; } = string.Empty;
         public string TipoCuenta { get; set; } = string.Empty;
+        public int Ausencias { get; set; } = 0;
 
         // Navegacion
         public Rol Rol { get; set; } = null!;

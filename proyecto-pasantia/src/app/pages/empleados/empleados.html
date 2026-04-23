@@ -132,6 +132,7 @@
                     <th>Fecha Ingreso</th>
                     <th>Departamento</th>
                     <th>Jefe</th>
+                    <th *ngIf="tienePermiso('Editar datos basicos')">Ausencias</th>
                     <th *ngIf="tienePermiso('Editar datos basicos')">Acciones</th>
                   </tr>
                   <tr class="thead-filters">
@@ -188,6 +189,26 @@
                     <td>{{ emp.fechaI }}</td>
                     <td>{{ emp.departamento }}</td>
                     <td>{{ emp.nombreJefe }}</td>
+                    <td *ngIf="tienePermiso('Editar datos basicos')">
+                      <div style="display:flex;align-items:center;gap:6px;">
+                        <button class="btn-action" title="Quitar ausencia" (click)="quitarAusencia(emp)"
+                          [disabled]="emp.ausencias === 0">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                          </svg>
+                        </button>
+                        <span [style.color]="emp.ausencias >= limiteAusencias ? 'var(--red)' : 'var(--gray-600)'"
+                          style="min-width:20px;text-align:center;font-weight:700">
+                          {{ emp.ausencias }}
+                        </span>
+                        <button class="btn-action" title="Agregar ausencia" (click)="agregarAusencia(emp)">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
                     <td *ngIf="tienePermiso('Editar datos basicos')" class="td-actions">
                       <button class="btn-action btn-edit" title="Editar" (click)="abrirModal(emp)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

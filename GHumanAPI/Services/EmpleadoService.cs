@@ -42,6 +42,7 @@ namespace GHumanAPI.Services
                     Banco = e.Banco,
                     NumeroCuenta = e.NumeroCuenta,
                     TipoCuenta = e.TipoCuenta,
+                    Ausencias = e.Ausencias,
                 })
                 .ToListAsync();
         }
@@ -153,7 +154,7 @@ namespace GHumanAPI.Services
 
         public async Task<bool> Eliminar(int id)
         {
-            
+
             var empleado = await _context.Empleados.FindAsync(id);
             if (empleado == null) return false;
 
@@ -239,6 +240,7 @@ namespace GHumanAPI.Services
                     Banco = e.Banco,
                     NumeroCuenta = e.NumeroCuenta,
                     TipoCuenta = e.TipoCuenta,
+                    Ausencias = e.Ausencias,
                 })
                 .ToListAsync();
 
@@ -299,6 +301,55 @@ namespace GHumanAPI.Services
             {
                 Console.WriteLine($"Error eliminando contacto de Resend: {ex.Message}");
             }
+        }
+        public async Task<EmpleadoDTO?> ActualizarAusencias(int id, int cantidad)
+        {
+            var empleado = await _context.Empleados
+                .Include(e => e.Rol)
+                .Include(e => e.Jefe)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (empleado == null) return null;
+
+            var config = await _context.EmpresaConfig.FirstOrDefaultAsync();
+            var limite = config?.LimiteAusencias ?? 3;
+
+            empleado.Ausencias += cantidad;
+
+            if (empleado.Ausencias < 0)
+                empleado.Ausencias = 0;
+
+            if (empleado.Ausencias >= limite)
+            {
+                empleado.Estado = "suspendido";
+            }
+            else if (empleado.Estado == "suspendido")
+            {
+                empleado.Estado = "activo";
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new EmpleadoDTO
+            {
+                Id = empleado.Id,
+                Genero = empleado.Genero,
+                Nombre = empleado.Nombre,
+                Email = empleado.Email,
+                Sueldo = empleado.Sueldo,
+                FechaI = empleado.FechaI.ToString("yyyy-MM-dd"),
+                Departamento = empleado.Departamento,
+                IdJefe = empleado.IdJefe,
+                NombreJefe = empleado.Jefe?.Nombre ?? string.Empty,
+                IdRol = empleado.IdRol,
+                NombreRol = empleado.Rol?.Nombre ?? string.Empty,
+                Estado = empleado.Estado,
+                TieneUsuario = empleado.Usuario != null,
+                Banco = empleado.Banco,
+                NumeroCuenta = empleado.NumeroCuenta,
+                TipoCuenta = empleado.TipoCuenta,
+                Ausencias = empleado.Ausencias
+            };
         }
     }
 }

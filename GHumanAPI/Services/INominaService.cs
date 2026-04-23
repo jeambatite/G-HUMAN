@@ -10,5 +10,6 @@ namespace GHumanAPI.Services
         Task<bool> BonoGlobal(BonoGlobalDTO dto);
         Task<List<NominaPagoDTO>> GetHistorial();
         Task ProcesarNomina();
+        Task<bool> ActualizarLimiteAusencias(int limite);
     }
 }

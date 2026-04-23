@@ -31,6 +31,7 @@ namespace GHumanAPI.DTOs
         public int UltimaNominaMes { get; set; }
         public int DiaPago { get; set; }
         public string EmailAdmin { get; set; } = string.Empty;
+        public int LimiteAusencias { get; set; }
     }
 
     public class TestRunDTO

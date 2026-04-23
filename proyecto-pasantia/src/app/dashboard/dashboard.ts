@@ -8,6 +8,7 @@ import { RolService } from '../services/rol.service';
 import { UsuarioService } from '../services/usuario.service';
 import { RouterModule } from '@angular/router';
 import { PermisoService } from '../services/permiso.service';
+import { NominaService } from '../services/nomina.service';
 
 export interface Empleado {
   id: number;
@@ -20,6 +21,7 @@ export interface Empleado {
   fecha_i: string;
   departamento: string;
   jefe: string;
+
   // Datos sensibles
   tipoDocumento?: string;
   numDocumento?: string;
@@ -36,6 +38,7 @@ export interface Empleado {
 
 }
 
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -47,12 +50,10 @@ export class Dashboard implements OnInit {
 
   currentRole: string = 'n1';
 
-  /*users: Record<string, any> = {
-    n1: { name: 'Carlos Mendez', dept: 'Ventas', initials: 'CM', badge: 'Nivel 1 - Solo Lectura', roleLabel: 'Nivel 1' },
-    n2: { name: 'Maria Lopez', dept: 'Administracion', initials: 'ML', badge: 'Nivel 2 - Edicion Basica', roleLabel: 'Nivel 2' },
-    n3: { name: 'Roberto Silva', dept: 'Gerencia', initials: 'RS', badge: 'Nivel 3 - Acceso Total', roleLabel: 'Nivel 3' },
-    admin: { name: 'Juan Diaz', dept: 'Recursos Humanos', initials: 'JD', badge: 'Administrador', roleLabel: 'Administrador' },
-  };*/
+  limiteAusencias: number = 0;
+
+
+
 
   //modal cumleapños
   modalCumpleanosAbierto: boolean = false;
@@ -65,7 +66,7 @@ export class Dashboard implements OnInit {
 
   verificarCumpleanos(): void {
     const hoy = this.hoy;
-    
+
     this.cumpleaneros = this.empleados.filter(e => {
       if (!e.fechaNacimiento) return false;
       return e.fechaNacimiento.substring(5, 10) === hoy;
@@ -116,7 +117,8 @@ export class Dashboard implements OnInit {
     private usuarioService: UsuarioService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private permisoService: PermisoService
+    private permisoService: PermisoService,
+    private nominaService: NominaService,
   ) { }
 
   ngOnInit(): void {
@@ -128,6 +130,13 @@ export class Dashboard implements OnInit {
     this.permisoService.getAll().subscribe({
       next: (data) => this.permisosDisponibles = data,
       error: (err) => console.error('Error cargando permisos', err)
+    });
+    this.nominaService.getConfig().subscribe({
+      next: (data) => {
+        this.limiteAusencias = data.limiteAusencias;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error cargando config', err)
     });
     // Verificar sesión cada minuto
     setInterval(() => {
@@ -145,7 +154,7 @@ export class Dashboard implements OnInit {
 
 
   }
-  
+
   getRolClass(): string {
     const nombre = this.currentRole.toLowerCase().trim();
     if (nombre.includes('nivel 1')) return 'role-n1';

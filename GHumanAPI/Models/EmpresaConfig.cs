@@ -9,5 +9,6 @@ namespace GHumanAPI.Models
         public string EmailAdmin { get; set; } = string.Empty;
         public string SmtpPasswordHash { get; set; } = string.Empty;
         public string TestRunKeyHash { get; set; } = string.Empty;
+        public int LimiteAusencias { get; set; } = 3;
     }
 }

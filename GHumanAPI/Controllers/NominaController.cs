@@ -76,5 +76,16 @@ namespace GHumanAPI.Controllers
             await _nominaService.ProcesarNomina();
             return Ok(new { message = "Nómina procesada correctamente." });
         }
+        [HttpPut("config/limite-ausencias")]
+        public async Task<IActionResult> ActualizarLimiteAusencias([FromBody] int limite)
+        {
+            if (limite < 1 || limite > 365)
+                return BadRequest(new { message = "El límite debe estar entre 1 y 365." });
+
+            var result = await _nominaService.ActualizarLimiteAusencias(limite);
+            if (!result) return NotFound(new { message = "Configuración no encontrada." });
+
+            return Ok(new { message = $"Límite de ausencias actualizado a {limite}." });
+        }
     }
 }

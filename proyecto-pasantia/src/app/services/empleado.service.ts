@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class EmpleadoService {
-    private apiUrl = environment.apiUrl;
+  private apiUrl = environment.apiUrl;
 
 
   constructor(private http: HttpClient, private authService: AuthService) { }
@@ -38,6 +38,12 @@ export class EmpleadoService {
   getDatosSensibles(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/empleados/${id}/datos-sensibles`, { headers: this.headers() });
   }
+  agregarAusencia(id: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/empleados/${id}/ausencias`, {}, { headers: this.headers() });
+  }
+  quitarAusencia(id: number): Observable<any> {
+  return this.http.put(`${this.apiUrl}/empleados/${id}/ausencias/quitar`, {}, { headers: this.headers() });
+}
   getPaginado(pagina: number, tamanoPagina: number, filtros?: any): Observable<any> {
     let params = `pagina=${pagina}&tamanoPagina=${tamanoPagina}`;
     if (filtros?.nombre) params += `&nombre=${filtros.nombre}`;

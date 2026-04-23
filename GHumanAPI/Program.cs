@@ -12,6 +12,16 @@ var builder = WebApplication.CreateBuilder(args);
 // --- 1. CONFIGURACIÓN DE BASE DE DATOS ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+if (string.IsNullOrEmpty(connectionString))
+{
+    Console.WriteLine("❌ FATAL: La cadena de conexión 'DefaultConnection' está vacía o no fue encontrada.");
+    Console.WriteLine("   Asegúrate de que la variable de entorno 'ConnectionStrings__DefaultConnection' esté configurada en Railway.");
+}
+else
+{
+    Console.WriteLine("✅ Cadena de conexión cargada correctamente.");
+}
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
@@ -110,11 +120,11 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// 1. Enrutamiento primero
-app.UseRouting(); 
+// 1. CORS antes de Routing para interceptar preflight OPTIONS correctamente
+app.UseCors("AllowRailwayFront");
 
-// 2. CORS inmediatamente después de Routing
-app.UseCors("AllowRailwayFront"); 
+// 2. Enrutamiento después de CORS
+app.UseRouting();
 
 // 3. Redirección (Opcional, a veces causa problemas con CORS en Railway, prueba comentarlo si sigue fallando)
 // app.UseHttpsRedirection(); 

@@ -100,20 +100,32 @@ using (var scope = app.Services.CreateScope())
 
 // --- 6. MIDDLEWARE PIPELINE ---
 
-app.UseDeveloperExceptionPage();
+// --- 6. MIDDLEWARE PIPELINE ---
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+// 1. Enrutamiento primero
+app.UseRouting(); 
+
+// 2. CORS inmediatamente después de Routing
+app.UseCors("AllowRailwayFront"); 
+
+// 3. Redirección (Opcional, a veces causa problemas con CORS en Railway, prueba comentarlo si sigue fallando)
+// app.UseHttpsRedirection(); 
+
 app.UseStaticFiles();
-app.UseCors("AllowRailwayFront");
 
-
-
-
+// 4. Seguridad
 app.UseAuthentication();
 app.UseAuthorization();
 
+// 5. Mapeo
 app.MapControllers();
-app.UseRouting();
+
 app.Run();

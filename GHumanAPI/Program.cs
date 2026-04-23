@@ -45,7 +45,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowRailwayFront", policy =>
     {
         policy.WithOrigins(
-                "https://beautiful-adaptation-production-7e38.up.railway.app",
+                "https://beautiful-adaptation-production-7e38.up.railway.app/",
                 "http://localhost:4200"
               )
               .AllowAnyMethod()

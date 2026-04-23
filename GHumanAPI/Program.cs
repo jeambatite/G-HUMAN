@@ -98,7 +98,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// --- 6. MIDDLEWARE PIPELINE ---
 
 // --- 6. MIDDLEWARE PIPELINE ---
 
@@ -117,7 +116,7 @@ app.UseRouting();
 app.UseCors("AllowRailwayFront"); 
 
 // 3. Redirección (Opcional, a veces causa problemas con CORS en Railway, prueba comentarlo si sigue fallando)
-// app.UseHttpsRedirection(); 
+app.UseHttpsRedirection(); 
 
 app.UseStaticFiles();
 

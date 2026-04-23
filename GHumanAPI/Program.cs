@@ -99,6 +99,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 // --- 6. MIDDLEWARE PIPELINE ---
+app.UseRouting();
 app.UseDeveloperExceptionPage();
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -106,7 +107,7 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCors("AllowRailwayFront");
-app.UseRouting();
+
 
 
 

@@ -17,6 +17,9 @@ namespace GHumanAPI.Services
         public async Task<List<PostulanteDTO>> GetPostulantes(string? estado, string? puesto, string? busquedaCv)
         {
             var query = _context.Postulantes.AsQueryable();
+            if (!string.IsNullOrEmpty(puesto))
+                query = query.Where(p => p.PuestoAplicado != null &&
+                    p.PuestoAplicado.ToLower().Contains(puesto.ToLower()));
 
             if (!string.IsNullOrEmpty(estado))
                 query = query.Where(p => p.Estado == estado);
@@ -42,16 +45,16 @@ namespace GHumanAPI.Services
         {
             var postulante = new Postulante
             {
-                Nombre           = dto.Nombre,
-                Email            = dto.Email,
-                Telefono         = dto.Telefono,
-                PuestoAplicado   = dto.PuestoAplicado,
+                Nombre = dto.Nombre,
+                Email = dto.Email,
+                Telefono = dto.Telefono,
+                PuestoAplicado = dto.PuestoAplicado,
                 ExperienciaAnios = dto.ExperienciaAnios,
-                NivelEducacion   = dto.NivelEducacion,
-                CvUrl            = dto.CvUrl,
-                CvTexto          = dto.CvTexto,
+                NivelEducacion = dto.NivelEducacion,
+                CvUrl = dto.CvUrl,
+                CvTexto = dto.CvTexto,
                 FechaPostulacion = DateTime.UtcNow,
-                Estado           = "pendiente"
+                Estado = "pendiente"
             };
 
             _context.Postulantes.Add(postulante);
@@ -84,11 +87,11 @@ namespace GHumanAPI.Services
                 .OrderByDescending(f => f.CreadoEn)
                 .Select(f => new FiltroAtsDTO
                 {
-                    Id           = f.Id,
-                    Nombre       = f.Nombre,
+                    Id = f.Id,
+                    Nombre = f.Nombre,
                     PalabrasClave = f.PalabrasClave,
-                    Activo       = f.Activo,
-                    CreadoEn     = f.CreadoEn
+                    Activo = f.Activo,
+                    CreadoEn = f.CreadoEn
                 })
                 .ToListAsync();
         }
@@ -97,20 +100,20 @@ namespace GHumanAPI.Services
         {
             var filtro = new FiltroAts
             {
-                Nombre        = dto.Nombre,
+                Nombre = dto.Nombre,
                 PalabrasClave = dto.PalabrasClave,
-                Activo        = true,
-                CreadoEn      = DateTime.UtcNow
+                Activo = true,
+                CreadoEn = DateTime.UtcNow
             };
             _context.FiltrosAts.Add(filtro);
             await _context.SaveChangesAsync();
             return new FiltroAtsDTO
             {
-                Id            = filtro.Id,
-                Nombre        = filtro.Nombre,
+                Id = filtro.Id,
+                Nombre = filtro.Nombre,
                 PalabrasClave = filtro.PalabrasClave,
-                Activo        = filtro.Activo,
-                CreadoEn      = filtro.CreadoEn
+                Activo = filtro.Activo,
+                CreadoEn = filtro.CreadoEn
             };
         }
 
@@ -172,20 +175,20 @@ namespace GHumanAPI.Services
 
             return new PostulanteDTO
             {
-                Id                = p.Id,
-                Nombre            = p.Nombre,
-                Email             = p.Email,
-                Telefono          = p.Telefono,
-                PuestoAplicado    = p.PuestoAplicado,
-                ExperienciaAnios  = p.ExperienciaAnios,
-                NivelEducacion    = p.NivelEducacion,
-                CvUrl             = p.CvUrl,
-                TieneCv           = !string.IsNullOrEmpty(p.CvUrl),
-                FechaPostulacion  = p.FechaPostulacion,
-                Estado            = p.Estado,
-                Notas             = p.Notas,
+                Id = p.Id,
+                Nombre = p.Nombre,
+                Email = p.Email,
+                Telefono = p.Telefono,
+                PuestoAplicado = p.PuestoAplicado,
+                ExperienciaAnios = p.ExperienciaAnios,
+                NivelEducacion = p.NivelEducacion,
+                CvUrl = p.CvUrl,
+                TieneCv = !string.IsNullOrEmpty(p.CvUrl),
+                FechaPostulacion = p.FechaPostulacion,
+                Estado = p.Estado,
+                Notas = p.Notas,
                 PalabrasEncontradas = palabrasEncontradas.Distinct().ToList()
             };
         }
     }
-}   
+}

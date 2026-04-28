@@ -17,15 +17,14 @@ namespace GHumanAPI.Services
         public async Task<List<PostulanteDTO>> GetPostulantes(string? estado, string? puesto, string? busquedaCv)
         {
             var query = _context.Postulantes.AsQueryable();
-            if (!string.IsNullOrEmpty(puesto))
-                query = query.Where(p => p.PuestoAplicado != null &&
-                    p.PuestoAplicado.ToLower().Contains(puesto.ToLower()));
+
 
             if (!string.IsNullOrEmpty(estado))
                 query = query.Where(p => p.Estado == estado);
 
+        
             if (!string.IsNullOrEmpty(puesto))
-                query = query.Where(p => p.PuestoAplicado != null && p.PuestoAplicado.Contains(puesto));
+                query = query.Where(p => p.PuestoAplicado != null && p.PuestoAplicado.ToLower().Contains(puesto.ToLower()));
 
             var postulantes = await query.OrderByDescending(p => p.FechaPostulacion).ToListAsync();
 

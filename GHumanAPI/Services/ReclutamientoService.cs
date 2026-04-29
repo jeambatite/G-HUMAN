@@ -22,7 +22,7 @@ namespace GHumanAPI.Services
             if (!string.IsNullOrEmpty(estado))
                 query = query.Where(p => p.Estado == estado);
 
-        
+
             if (!string.IsNullOrEmpty(puesto))
                 query = query.Where(p => p.PuestoAplicado != null && p.PuestoAplicado.ToLower().Contains(puesto.ToLower()));
 
@@ -42,6 +42,10 @@ namespace GHumanAPI.Services
 
         public async Task<PostulanteDTO> Crear(CrearPostulanteDTO dto)
         {
+            var cvTexto = string.Empty;
+            if (!string.IsNullOrEmpty(dto.CvUrl))
+                cvTexto = await ExtraerTextoPdf(dto.CvUrl);
+
             var postulante = new Postulante
             {
                 Nombre = dto.Nombre,
@@ -51,7 +55,7 @@ namespace GHumanAPI.Services
                 ExperienciaAnios = dto.ExperienciaAnios,
                 NivelEducacion = dto.NivelEducacion,
                 CvUrl = dto.CvUrl,
-                CvTexto = dto.CvTexto,
+                CvTexto = cvTexto,
                 FechaPostulacion = DateTime.UtcNow,
                 Estado = "pendiente"
             };
@@ -188,6 +192,22 @@ namespace GHumanAPI.Services
                 Notas = p.Notas,
                 PalabrasEncontradas = palabrasEncontradas.Distinct().ToList()
             };
+        }
+        private async Task<string> ExtraerTextoPdf(string url)
+        {
+            try
+            {
+                using var client = new HttpClient();
+                var bytes = await client.GetByteArrayAsync(url);
+                using var doc = UglyToad.PdfPig.PdfDocument.Open(bytes);
+                var texto = string.Join(" ", doc.GetPages().Select(p => p.Text));
+                return texto;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error extrayendo texto del PDF: {ex.Message}");
+                return string.Empty;
+            }
         }
     }
 }

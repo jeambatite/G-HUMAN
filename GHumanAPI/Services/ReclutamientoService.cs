@@ -197,8 +197,22 @@ namespace GHumanAPI.Services
         {
             try
             {
+                // Convertir URL de Google Drive a URL de descarga directa
+                string downloadUrl = url;
+                if (url.Contains("drive.google.com/open?id="))
+                {
+                    var id = url.Split("id=")[1];
+                    downloadUrl = $"https://drive.google.com/uc?export=download&id={id}";
+                }
+                else if (url.Contains("drive.google.com/file/d/"))
+                {
+                    var id = url.Split("/d/")[1].Split("/")[0];
+                    downloadUrl = $"https://drive.google.com/uc?export=download&id={id}";
+                }
+
                 using var client = new HttpClient();
-                var bytes = await client.GetByteArrayAsync(url);
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0");
+                var bytes = await client.GetByteArrayAsync(downloadUrl);
                 using var doc = UglyToad.PdfPig.PdfDocument.Open(bytes);
                 var texto = string.Join(" ", doc.GetPages().Select(p => p.Text));
                 return texto;
